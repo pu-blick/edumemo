@@ -60,11 +60,13 @@ const PaymentSuccessPage: React.FC = () => {
     const confirmPayment = async () => {
       try {
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
         const res = await fetch(`${supabaseUrl}/functions/v1/toss-payment-confirm`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
+            'apikey': supabaseAnonKey,
           },
           body: JSON.stringify({
             paymentKey,
