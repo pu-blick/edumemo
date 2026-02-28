@@ -34,3 +34,10 @@ dist-ssr
 .supabase/
 supabase/.branches/
 supabase/.temp/
+
+# Local Netlify folder
+.netlify
+
+# Debug / patch scripts (local only)
+*.cjs
+pages_StudentDetail.tsx

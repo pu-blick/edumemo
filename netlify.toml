@@ -5,8 +5,30 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# SPA 라우팅 - 모든 경로를 index.html로 (HashRouter 사용이므로 안전망용)
+# SPA 라우팅 - HashRouter 사용이므로 안전망용
 [[redirects]]
   from   = "/*"
   to     = "/index.html"
   status = 200
+
+# ── 보안 헤더 ────────────────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # 클릭재킹 방지
+    X-Frame-Options = "DENY"
+    # MIME 스니핑 방지
+    X-Content-Type-Options = "nosniff"
+    # XSS 필터 (구형 브라우저용)
+    X-XSS-Protection = "1; mode=block"
+    # Referrer 최소화 (외부 URL 유출 방지)
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # 브라우저 권한 정책 (마이크는 음성입력 기능을 위해 허용)
+    Permissions-Policy = "camera=(), microphone=(self), geolocation=(), payment=(self)"
+    # HSTS: HTTPS 강제 (1년, 서브도메인 포함)
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    # CSP: 허용된 출처만 리소스 로드
+    # - connect-src: Supabase + TossPayments(api+js+toss.im) + Gemini AI
+    # - script-src: 자체 번들 + TossPayments SDK CDN + Tailwind CDN
+    # - frame-src: TossPayments 결제 iframe (tosspayments.com + toss.im)
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://*.tosspayments.com https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.tosspayments.com https://*.toss.im https://generativelanguage.googleapis.com wss://generativelanguage.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; frame-src https://*.tosspayments.com https://*.toss.im; worker-src 'self' blob: https://*.tosspayments.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://*.tosspayments.com https://*.toss.im;"

@@ -65,13 +65,13 @@ const Navbar: React.FC<{ isOnline: boolean }> = ({ isOnline }) => {
         </Link>
 
         {user && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <Link to="/" className="hidden md:flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
               <LayoutDashboard size={16} /> Dashboard
             </Link>
 
-            <Link to="/pricing" className="hidden md:flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors bg-emerald-50 px-2.5 py-1 rounded-lg">
-              <CreditCard size={16} /> 구독
+            <Link to="/pricing" className="flex items-center gap-1.5 text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 transition-colors px-3 py-1.5 rounded-lg shadow-sm">
+              <CreditCard size={15} /> 구독
             </Link>
 
             {isAdmin && (
@@ -80,7 +80,7 @@ const Navbar: React.FC<{ isOnline: boolean }> = ({ isOnline }) => {
               </Link>
             )}
 
-            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+            <div className="hidden md:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
               <span className="text-[10px] font-bold text-slate-500 max-w-[120px] truncate uppercase">
                 {user.email}

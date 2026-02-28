@@ -25,22 +25,26 @@ serve(async (req: Request) => {
     const rawBody = await req.text();
 
     // ── 웹훅 서명 검증 (HMAC-SHA256) ─────────────────────────
+    // 서명 헤더 없는 요청은 위조로 간주하여 즉시 차단
     const signature = req.headers.get('TossPayments-Signature');
-    if (signature) {
-      const key = await crypto.subtle.importKey(
-        'raw',
-        new TextEncoder().encode(TOSS_SECRET_KEY),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-      );
-      const sigBytes = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(rawBody));
-      const computed = btoa(String.fromCharCode(...new Uint8Array(sigBytes)));
+    if (!signature) {
+      console.error('Missing webhook signature header');
+      return new Response('Forbidden', { status: 403 });
+    }
 
-      if (computed !== signature) {
-        console.error('Invalid webhook signature');
-        return new Response('Forbidden', { status: 403 });
-      }
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(TOSS_SECRET_KEY),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    const sigBytes = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(rawBody));
+    const computed = btoa(String.fromCharCode(...new Uint8Array(sigBytes)));
+
+    if (computed !== signature) {
+      console.error('Invalid webhook signature');
+      return new Response('Forbidden', { status: 403 });
     }
 
     const event = JSON.parse(rawBody) as {

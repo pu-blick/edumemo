@@ -7,7 +7,18 @@ import { XCircle, ArrowLeft, RefreshCw } from 'lucide-react';
  */
 const PaymentFailPage: React.FC = () => {
   const location = useLocation();
-  const params = new URLSearchParams(location.search);
+
+  // ── URL 파라미터 파싱 (HashRouter + 앱결제 복귀 호환) ────
+  let searchStr = location.search;
+  if (!searchStr) {
+    const hash = window.location.hash;
+    searchStr = hash.includes('?') ? '?' + hash.split('?').slice(1).join('?') : '';
+  }
+  if (!searchStr) {
+    searchStr = window.location.search;
+  }
+
+  const params  = new URLSearchParams(searchStr);
   const code    = params.get('code')    || '';
   const message = params.get('message') || '결제가 취소되었습니다.';
   const orderId = params.get('orderId') || '';

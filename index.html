@@ -5,13 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edumemo - AI 생활기록부 관리</title>
     
-    <link rel="icon" href="https://docs.google.com/drawings/d/e/2PACX-1vT1bcY13j-n8oEp2AxJhNVUKtXdwIOuJw7bNdylK342n_XvtatS40Ax5YazL5Uf5Q5_XGOxejHDJmDE/pub?w=192&h=192" type="image/png">
-    
-    <link rel="apple-touch-icon" href="https://docs.google.com/drawings/d/e/2PACX-1vT1bcY13j-n8oEp2AxJhNVUKtXdwIOuJw7bNdylK342n_XvtatS40Ax5YazL5Uf5Q5_XGOxejHDJmDE/pub?w=192&h=192">
+    <link rel="icon" href="/icons/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
     
     <link rel="manifest" href="/manifest.json">
     
     <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="에듀메모">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+      }
+    </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">

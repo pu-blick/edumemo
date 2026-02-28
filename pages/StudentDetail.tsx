@@ -9,8 +9,6 @@ import {
   History, User as UserIcon, Loader2, Mic, MicOff, FileDown, CheckSquare, Square
 } from 'lucide-react';
 import { generateStudentDraft } from '../services/geminiService';
-import { GoogleGenAI, Modality } from '@google/genai';
-import { createBlob } from '../lib/audioUtils';
 import * as XLSX from 'xlsx';
 
 const StudentDetail: React.FC = () => {
@@ -31,7 +29,8 @@ const StudentDetail: React.FC = () => {
   const [editNumber, setEditNumber] = useState('');
 
   const sessionRef = useRef<any>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
+  const liveTranscriptionRef = useRef('');
+  const isRecordingRef = useRef(false);
 
   const fetchData = useCallback(async () => {
     if (!studentId) return;
@@ -103,53 +102,50 @@ const StudentDetail: React.FC = () => {
     }
   };
 
-  const startVoiceRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
-      const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
-        config: {
-          responseModalities: [Modality.AUDIO],
-          inputAudioTranscription: {},
-          systemInstruction: '학생 관찰 내용을 받아적는 비서입니다.',
-        },
-        callbacks: {
-          onopen: () => {
-            setIsRecording(true);
-            const source = audioContextRef.current!.createMediaStreamSource(stream);
-            const scriptProcessor = audioContextRef.current!.createScriptProcessor(4096, 1, 1);
-            scriptProcessor.onaudioprocess = (e) => {
-              const pcmBlob = createBlob(e.inputBuffer.getChannelData(0));
-              sessionPromise.then(s => s.sendRealtimeInput({ media: pcmBlob }));
-            };
-            source.connect(scriptProcessor);
-            scriptProcessor.connect(audioContextRef.current!.destination);
-            (window as any)._voiceSource = source;
-            (window as any)._voiceProcessor = scriptProcessor;
-          },
-          onmessage: (m: any) => {
-            if (m.serverContent?.inputTranscription) {
-              setLiveTranscription(p => p + m.serverContent!.inputTranscription!.text);
-            }
-          },
-          onclose: () => setIsRecording(false),
-        },
-      });
-      sessionRef.current = await sessionPromise;
-    } catch {
-      alert('마이크 권한이 필요합니다.');
-    }
+  const startVoiceRecording = () => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) { alert('이 브라우저는 음성 인식을 지원하지 않습니다.'); return; }
+    const recognition = new SR();
+    recognition.lang = 'ko-KR';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    liveTranscriptionRef.current = '';
+    isRecordingRef.current = true;
+    recognition.onresult = (event: any) => {
+      let transcript = '';
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      liveTranscriptionRef.current = transcript;
+      setLiveTranscription(transcript);
+    };
+    recognition.onerror = (e: any) => {
+      if (e.error !== 'no-speech') {
+        isRecordingRef.current = false;
+        setIsRecording(false);
+      }
+    };
+    recognition.onend = () => {
+      if (isRecordingRef.current) {
+        try { recognition.start(); } catch {}
+      } else {
+        setIsRecording(false);
+      }
+    };
+    recognition.start();
+    setIsRecording(true);
+    sessionRef.current = recognition;
   };
 
   const stopVoiceRecording = () => {
-    if (sessionRef.current) sessionRef.current.close();
-    if (audioContextRef.current) audioContextRef.current.close();
+    isRecordingRef.current = false;
+    if (sessionRef.current) sessionRef.current.stop();
     setIsRecording(false);
-    if (liveTranscription) {
-      setNewObs(p => p + (p ? '\n' : '') + liveTranscription);
+    const finalText = liveTranscriptionRef.current;
+    if (finalText) {
+      setNewObs(p => p + (p ? '\n' : '') + finalText);
       setLiveTranscription('');
+      liveTranscriptionRef.current = '';
     }
   };
 

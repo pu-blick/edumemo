@@ -26,7 +26,18 @@ const PaymentSuccessPage: React.FC = () => {
     // session 확정 후에만 중복 잠금 적용
     if (calledRef.current) return;
 
-    const params = new URLSearchParams(location.search);
+    // ── URL 파라미터 파싱 (HashRouter + 앱결제 복귀 호환) ────
+    // 우선순위: HashRouter location.search → hash 내 쿼리 → window.location.search
+    let searchStr = location.search;
+    if (!searchStr) {
+      const hash = window.location.hash; // e.g. "#/payment/success?paymentKey=..."
+      searchStr = hash.includes('?') ? '?' + hash.split('?').slice(1).join('?') : '';
+    }
+    if (!searchStr) {
+      searchStr = window.location.search; // 파라미터가 # 앞에 붙는 경우
+    }
+
+    const params = new URLSearchParams(searchStr);
     const paymentKey = params.get('paymentKey');
     const orderId    = params.get('orderId');
     const amount     = params.get('amount');
