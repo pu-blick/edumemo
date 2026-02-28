@@ -48,7 +48,7 @@ export interface BatchResult {
 
 // ── 구독 / 결제 타입 ──────────────────────────────────────────
 
-export type SubscriptionPlan = 'free' | 'pro' | 'school';
+export type SubscriptionPlan = 'free' | 'pro' | 'plus' | 'school' | 'tester';
 export type SubscriptionStatus = 'active' | 'canceled' | 'expired';
 
 export interface Subscription {

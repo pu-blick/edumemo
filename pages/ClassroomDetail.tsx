@@ -4,6 +4,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Classroom, Student } from '../types';
+import { getPlanLimits } from '../lib/planLimits';
 import {
   UserPlus, Search, ArrowLeft, Download, Trash2,
   User as UserIcon, Users, Zap, Loader2, ClipboardList, FileUp
@@ -58,6 +59,15 @@ const ClassroomDetail: React.FC = () => {
   const handleAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newStudent.name.trim() || !user || !classroomId) return;
+
+    // 플랜 한도 체크
+    const { data: sub } = await supabase.from('subscriptions').select('plan').eq('user_id', user.id).single();
+    const limits = getPlanLimits(sub?.plan);
+    if (students.length >= limits.maxStudentsPerClass) {
+      alert(`이 플랜에서는 클래스당 최대 ${limits.maxStudentsPerClass}명까지 등록할 수 있습니다.\n플랜을 업그레이드하여 더 많은 학생을 등록해 보세요.`);
+      return;
+    }
+
     const { error } = await supabase.from('students').insert({
       student_number: newStudent.number.trim(),
       name: newStudent.name.trim(),
@@ -78,6 +88,17 @@ const ClassroomDetail: React.FC = () => {
         const wb = XLSX.read(evt.target?.result, { type: 'binary' });
         const data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 }) as any[][];
         const rows = data.slice(1).filter(r => r[0] && r[1]);
+
+        // 플랜 한도 체크
+        const { data: sub } = await supabase.from('subscriptions').select('plan').eq('user_id', user!.id).single();
+        const limits = getPlanLimits(sub?.plan);
+        if (students.length + rows.length > limits.maxStudentsPerClass) {
+          setUploadStatus({ type: 'error', message: `업로드 불가: 현재 ${students.length}명 + 업로드 ${rows.length}명 = ${students.length + rows.length}명으로 ${limits.maxStudentsPerClass}명 한도를 초과합니다.` });
+          setIsUploading(false);
+          e.target.value = '';
+          return;
+        }
+
         const inserts = rows.map(row => ({
           student_number: String(row[0]).trim(),
           name: String(row[1]).trim(),

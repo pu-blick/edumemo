@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Classroom } from '../types';
+import { getPlanLimits } from '../lib/planLimits';
 import {
   Plus, Trash2, ChevronRight, School, Loader2, Edit2,
   Smartphone, Monitor, Sparkles, CheckCircle
@@ -52,6 +53,15 @@ const Dashboard: React.FC = () => {
   const handleAddClassroom = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newClassName.trim() || !user) return;
+
+    // 플랜 한도 체크
+    const { data: sub } = await supabase.from('subscriptions').select('plan').eq('user_id', user.id).single();
+    const limits = getPlanLimits(sub?.plan);
+    if (classrooms.length >= limits.maxClasses) {
+      alert(`현재 플랜에서는 최대 ${limits.maxClasses}개의 클래스를 만들 수 있습니다.\n플랜을 업그레이드하여 더 많은 클래스를 운영해 보세요.`);
+      return;
+    }
+
     const { error } = await supabase
       .from('classrooms')
       .insert({ name: newClassName.trim(), user_id: user.id });
