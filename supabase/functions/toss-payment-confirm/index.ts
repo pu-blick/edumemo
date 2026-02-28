@@ -135,7 +135,7 @@ serve(async (req: Request) => {
 
     // ── 7. 플랜별 크레딧 계산 ────────────────────────────────
     const plan       = order.plan || 'pro';
-    const creditsMap: Record<string, number> = { pro: 100, school: 500, free: 0 };
+    const creditsMap: Record<string, number> = { pro: 200, plus: 500, school: 999, free: 0 };
     const creditsToAdd = creditsMap[plan] ?? 100;
 
     // ── 8. DB 원자적 업데이트 (트랜잭션 함수 호출) ──────────

@@ -17,6 +17,8 @@ import AdminPage from './pages/AdminPage';
 import PricingPage from './pages/PricingPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentFailPage from './pages/PaymentFailPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
 
 const ADMIN_EMAIL = 'admin@edumemo.com';
 
@@ -162,6 +164,10 @@ const AppContent: React.FC = () => {
             <Route path="/payment/success" element={<PaymentSuccessPage />} />
             <Route path="/payment/fail"    element={<PaymentFailPage />} />
 
+            {/* 공개 정책 페이지 */}
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms"   element={<TermsPage />} />
+
             {/* 인증 필요 라우트 */}
             <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/classroom/:classroomId" element={<PrivateRoute><ClassroomDetail /></PrivateRoute>} />
@@ -176,14 +182,25 @@ const AppContent: React.FC = () => {
           </Routes>
         </main>
 
-        <footer className="py-6 border-t border-slate-100 bg-white">
-          <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-3">
-            <p className="text-[9px] text-slate-300 font-bold tracking-[0.2em] uppercase">PUBLICSKY INC.</p>
-            {user && (
-              <p className="text-[9px] text-slate-400 font-medium bg-slate-50 px-3 py-1 rounded-lg border border-slate-100 uppercase">
-                SESSION: {user.id.substring(0, 8)}
-              </p>
-            )}
+        <footer className="py-8 border-t border-slate-100 bg-white">
+          <div className="container mx-auto px-4 flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div className="text-[10px] text-slate-400 leading-relaxed space-y-0.5">
+                <p className="font-bold text-slate-500">주식회사 퍼블릭스카이</p>
+                <p>대표자: 하상욱 | 사업자등록번호: 618-81-37189 | 통신판매업 신고번호: 2023-세종아름-0260</p>
+                <p>주소: 세종특별자치시 도움3로 105-5 806호 | 전화: 010-2314-4577 | 이메일: publicsky7@gmail.com</p>
+              </div>
+              {user && (
+                <p className="text-[9px] text-slate-400 font-medium bg-slate-50 px-3 py-1 rounded-lg border border-slate-100 uppercase shrink-0">
+                  SESSION: {user.id.substring(0, 8)}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-4 pt-2 border-t border-slate-50">
+              <Link to="/privacy" className="text-[10px] text-slate-400 hover:text-indigo-600 transition-colors font-medium">개인정보 처리방침</Link>
+              <span className="text-slate-200 text-xs">|</span>
+              <Link to="/terms" className="text-[10px] text-slate-400 hover:text-indigo-600 transition-colors font-medium">이용약관</Link>
+            </div>
           </div>
         </footer>
       </div>
