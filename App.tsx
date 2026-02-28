@@ -87,6 +87,14 @@ const Navbar: React.FC<{ isOnline: boolean }> = ({ isOnline }) => {
               </Link>
             )}
 
+            {/* 모바일: 아이디만 */}
+            <div className="flex md:hidden items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+              <span className="text-[10px] font-bold text-slate-500 uppercase">
+                {user.email.split('@')[0]}
+              </span>
+            </div>
+            {/* PC: 전체 이메일 */}
             <div className="hidden md:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
               <span className="text-[10px] font-bold text-slate-500 max-w-[120px] truncate uppercase">
@@ -185,21 +193,35 @@ const AppContent: React.FC = () => {
         <footer className="py-8 border-t border-slate-100 bg-white">
           <div className="container mx-auto px-4 flex flex-col gap-4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div className="text-[10px] text-slate-400 leading-relaxed space-y-0.5">
+
+              {/* PC: 파이프 구분 2줄 */}
+              <div className="hidden md:block text-xs text-slate-400 leading-relaxed space-y-0.5">
                 <p className="font-bold text-slate-500">주식회사 퍼블릭스카이</p>
                 <p>대표자: 하상욱 | 사업자등록번호: 618-81-37189 | 통신판매업 신고번호: 2023-세종아름-0260</p>
                 <p>주소: 세종특별자치시 도움3로 105-5 806호 | 전화: 010-2314-4577 | 이메일: publicsky7@gmail.com</p>
               </div>
+
+              {/* 모바일: 항목별 줄바꿈 */}
+              <div className="block md:hidden text-[11px] text-slate-400 leading-relaxed space-y-0.5">
+                <p className="font-bold text-slate-500">주식회사 퍼블릭스카이</p>
+                <p>대표자: 하상욱</p>
+                <p>사업자등록번호: 618-81-37189</p>
+                <p>통신판매업 신고번호: 2023-세종아름-0260</p>
+                <p>주소: 세종특별자치시 도움3로 105-5 806호</p>
+                <p>전화: 010-2314-4577</p>
+                <p>이메일: publicsky7@gmail.com</p>
+              </div>
+
               {user && (
-                <p className="text-[9px] text-slate-400 font-medium bg-slate-50 px-3 py-1 rounded-lg border border-slate-100 uppercase shrink-0">
+                <p className="hidden md:block text-[9px] text-slate-400 font-medium bg-slate-50 px-3 py-1 rounded-lg border border-slate-100 uppercase shrink-0">
                   SESSION: {user.id.substring(0, 8)}
                 </p>
               )}
             </div>
             <div className="flex items-center gap-4 pt-2 border-t border-slate-50">
-              <Link to="/privacy" className="text-[10px] text-slate-400 hover:text-indigo-600 transition-colors font-medium">개인정보 처리방침</Link>
+              <Link to="/privacy" className="text-xs text-slate-400 hover:text-indigo-600 transition-colors font-medium">개인정보 처리방침</Link>
               <span className="text-slate-200 text-xs">|</span>
-              <Link to="/terms" className="text-[10px] text-slate-400 hover:text-indigo-600 transition-colors font-medium">이용약관</Link>
+              <Link to="/terms" className="text-xs text-slate-400 hover:text-indigo-600 transition-colors font-medium">이용약관</Link>
             </div>
           </div>
         </footer>
