@@ -11,9 +11,11 @@ import { generateStudentDraft } from '../services/geminiService';
 import { GoogleGenAI, Modality } from '@google/genai';
 import { createBlob } from '../lib/audioUtils';
 import * as XLSX from 'xlsx';
+import { useToast } from './hooks/useToast';
 
 const StudentDetail: React.FC = () => {
   const { studentId } = useParams<{ studentId: string }>();
+  const showToast = useToast();
   const [student, setStudent] = useState<Student | null>(null);
   const [observations, setObservations] = useState<Observation[]>([]);
   const [selectedObsIds, setSelectedObsIds] = useState<Set<string>>(new Set());
@@ -55,7 +57,7 @@ const StudentDetail: React.FC = () => {
     try {
       await updateDoc(doc(db, 'students', student.id), { name: editName.trim(), studentNumber: editNumber.trim() });
       setIsEditingInfo(false);
-    } catch (err) { alert("수정 실패"); }
+    } catch (err) { showToast("수정 실패", "error"); }
   };
 
   const handleAddObservation = async (e?: React.FormEvent) => {
@@ -67,13 +69,13 @@ const StudentDetail: React.FC = () => {
 
   const handleGenerateAI = async () => {
     const targetObs = observations.filter(o => selectedObsIds.has(o.id)).map(o => o.content);
-    if (!student || targetObs.length === 0) return alert("기록을 선택해 주세요.");
+    if (!student || targetObs.length === 0) { showToast("기록을 선택해 주세요.", "warning"); return; }
     setIsGenerating(true); setDraftResult('');
     try { 
       const res = await generateStudentDraft(student.name, student.studentNumber, targetObs, charLimit, extraContext); 
       setDraftResult(res); 
     } 
-    catch (e: any) { alert(e.message); } finally { setIsGenerating(false); }
+    catch (e: any) { showToast(e.message, "error"); } finally { setIsGenerating(false); }
   };
 
   const startVoiceRecording = async () => {
@@ -101,7 +103,7 @@ const StudentDetail: React.FC = () => {
         }
       });
       sessionRef.current = await sessionPromise;
-    } catch (e) { alert("마이크 권한이 필요합니다."); }
+    } catch (e) { showToast("마이크 권한이 필요합니다.", "error"); }
   };
 
   const stopVoiceRecording = () => {
@@ -212,7 +214,7 @@ const StudentDetail: React.FC = () => {
               <div className="flex justify-between items-center mb-3">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">생성 결과</span>
                 <div className="flex gap-2">
-                  <button onClick={() => { navigator.clipboard.writeText(draftResult); alert("복사되었습니다."); }} className="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-all"><Copy size={16}/></button>
+                  <button onClick={() => { navigator.clipboard.writeText(draftResult); showToast("복사되었습니다.", "success"); }} className="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-all"><Copy size={16}/></button>
                   <button onClick={() => { const ws = XLSX.utils.aoa_to_sheet([['학생성명','학번','AI초안'],[student?.name,student?.studentNumber,draftResult]]); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "초안"); XLSX.writeFile(wb, `${student?.name}_초안.xlsx`); }} className="flex items-center gap-1.5 px-3 py-2 bg-emerald-500 text-white rounded-lg text-[11px] font-bold hover:bg-emerald-600 shadow-sm transition-all"><FileDown size={14}/> 엑셀</button>
                 </div>
               </div>

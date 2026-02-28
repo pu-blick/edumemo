@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Classroom, Student } from '../types';
 import { getPlanLimits } from '../lib/planLimits';
+import { useToast } from '../hooks/useToast';
 import {
   UserPlus, Search, ArrowLeft, Download, Trash2,
   User as UserIcon, Users, Zap, Loader2, ClipboardList, FileUp
@@ -15,6 +16,7 @@ const ClassroomDetail: React.FC = () => {
   const { classroomId } = useParams<{ classroomId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const showToast = useToast();
   const [classroom, setClassroom] = useState<Classroom | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [obsCounts, setObsCounts] = useState<Record<string, number>>({});
@@ -64,7 +66,7 @@ const ClassroomDetail: React.FC = () => {
     const { data: sub } = await supabase.from('subscriptions').select('plan').eq('user_id', user.id).single();
     const limits = getPlanLimits(sub?.plan);
     if (students.length >= limits.maxStudentsPerClass) {
-      alert(`이 플랜에서는 클래스당 최대 ${limits.maxStudentsPerClass}명까지 등록할 수 있습니다.\n플랜을 업그레이드하여 더 많은 학생을 등록해 보세요.`);
+      showToast(`이 플랜에서는 클래스당 최대 ${limits.maxStudentsPerClass}명까지 등록할 수 있습니다. 플랜을 업그레이드하여 더 많은 학생을 등록해 보세요.`, 'warning');
       return;
     }
 
@@ -75,7 +77,7 @@ const ClassroomDetail: React.FC = () => {
       user_id: user.id,
     });
     if (!error) { setNewStudent({ number: '', name: '' }); setIsAdding(false); }
-    else alert('등록 실패');
+    else showToast('등록 실패', 'error');
   };
 
   const handleStudentListUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

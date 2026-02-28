@@ -4,9 +4,13 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { AdminUserView } from '../types';
 import { ShieldCheck, Mail, Calendar, UserX, UserCheck, Search, Loader2, Key, AlertCircle } from 'lucide-react';
+import { useToast } from '../hooks/useToast';
+import { useConfirm } from '../hooks/useConfirm';
 
 const AdminPage: React.FC = () => {
   const { user, resetPassword } = useAuth();
+  const showToast = useToast();
+  const confirm = useConfirm();
   const [users, setUsers] = useState<AdminUserView[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,7 +29,7 @@ const AdminPage: React.FC = () => {
 
   const toggleUserStatus = async (target: AdminUserView) => {
     const newStatus = target.status === 'active' ? 'blocked' : 'active';
-    if (!window.confirm(`이 사용자의 계정 상태를 ${newStatus === 'blocked' ? '비활성화(Block)' : '활성화'}하시겠습니까?`)) return;
+    if (!await confirm(`이 사용자의 계정 상태를 ${newStatus === 'blocked' ? '비활성화(Block)' : '활성화'}하시겠습니까?`)) return;
     setProcessingId(target.id);
     try {
       const { error } = await supabase.rpc('admin_update_user_status', {
@@ -35,17 +39,17 @@ const AdminPage: React.FC = () => {
       if (error) throw error;
       setUsers(prev => prev.map(u => u.id === target.id ? { ...u, status: newStatus as 'active' | 'blocked' } : u));
     } catch {
-      alert('상태 변경 실패');
+      showToast('상태 변경 실패', 'error');
     } finally {
       setProcessingId(null);
     }
   };
 
   const handleResetPassword = async (email: string) => {
-    if (!window.confirm(`${email} 주소로 비밀번호 재설정 링크를 발송하시겠습니까?`)) return;
+    if (!await confirm(`${email} 주소로 비밀번호 재설정 링크를 발송하시겠습니까?`)) return;
     const { error } = await resetPassword(email);
-    if (!error) alert('재설정 이메일이 발송되었습니다.');
-    else alert('발송 실패');
+    if (!error) showToast('재설정 이메일이 발송되었습니다.', 'success');
+    else showToast('발송 실패', 'error');
   };
 
   const filteredUsers = users.filter(u => u.email.toLowerCase().includes(searchQuery.toLowerCase()));

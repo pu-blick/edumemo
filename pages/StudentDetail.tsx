@@ -10,10 +10,12 @@ import {
 } from 'lucide-react';
 import { generateStudentDraft } from '../services/geminiService';
 import * as XLSX from 'xlsx';
+import { useToast } from '../hooks/useToast';
 
 const StudentDetail: React.FC = () => {
   const { studentId } = useParams<{ studentId: string }>();
   const { user } = useAuth();
+  const showToast = useToast();
   const [student, setStudent] = useState<Student | null>(null);
   const [observations, setObservations] = useState<Observation[]>([]);
   const [selectedObsIds, setSelectedObsIds] = useState<Set<string>>(new Set());
@@ -64,7 +66,7 @@ const StudentDetail: React.FC = () => {
       .update({ name: editName.trim(), student_number: editNumber.trim() })
       .eq('id', student.id);
     if (!error) setIsEditingInfo(false);
-    else alert('수정 실패');
+    else showToast('수정 실패', 'error');
   };
 
   const handleAddObservation = async (e?: React.FormEvent) => {
@@ -89,14 +91,14 @@ const StudentDetail: React.FC = () => {
 
   const handleGenerateAI = async () => {
     const targetObs = observations.filter(o => selectedObsIds.has(o.id)).map(o => o.content);
-    if (!student || targetObs.length === 0) return alert('기록을 선택해 주세요.');
+    if (!student || targetObs.length === 0) { showToast('기록을 선택해 주세요.', 'warning'); return; }
     setIsGenerating(true);
     setDraftResult('');
     try {
       const res = await generateStudentDraft(student.name, student.student_number, targetObs, charLimit);
       setDraftResult(res);
     } catch (e: any) {
-      alert(e.message);
+      showToast(e.message, 'error');
     } finally {
       setIsGenerating(false);
     }
@@ -104,7 +106,7 @@ const StudentDetail: React.FC = () => {
 
   const startVoiceRecording = () => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) { alert('이 브라우저는 음성 인식을 지원하지 않습니다.'); return; }
+    if (!SR) { showToast('이 브라우저는 음성 인식을 지원하지 않습니다.', 'error'); return; }
     const recognition = new SR();
     recognition.lang = 'ko-KR';
     recognition.continuous = true;
@@ -284,7 +286,7 @@ const StudentDetail: React.FC = () => {
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">생성 결과</span>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => { navigator.clipboard.writeText(draftResult); alert('복사되었습니다.'); }}
+                    onClick={() => { navigator.clipboard.writeText(draftResult); showToast('복사되었습니다.', 'success'); }}
                     className="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-all"
                   >
                     <Copy size={16} />

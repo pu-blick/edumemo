@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { LogOut, LayoutDashboard, ShieldCheck, Wifi, WifiOff, Settings, CreditCard } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ToastContext, useToastState } from './hooks/useToast';
+import { ConfirmContext, useConfirmState, useConfirm } from './hooks/useConfirm';
+import Toast from './components/Toast';
+import ConfirmModal from './components/ConfirmModal';
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -49,9 +53,10 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const Navbar: React.FC<{ isOnline: boolean }> = ({ isOnline }) => {
   const { user, signOut } = useAuth();
   const isAdmin = user?.email === ADMIN_EMAIL;
+  const confirm = useConfirm();
 
   const handleLogout = async () => {
-    if (window.confirm('로그아웃 하시겠습니까?')) {
+    if (await confirm('로그아웃 하시겠습니까?')) {
       await signOut();
     }
   };
@@ -186,10 +191,20 @@ const AppContent: React.FC = () => {
   );
 };
 
-const App: React.FC = () => (
-  <AuthProvider>
-    <AppContent />
-  </AuthProvider>
-);
+const App: React.FC = () => {
+  const toastValue = useToastState();
+  const confirmValue = useConfirmState();
+  return (
+    <AuthProvider>
+      <ToastContext.Provider value={toastValue}>
+        <ConfirmContext.Provider value={confirmValue}>
+          <AppContent />
+          <Toast />
+          <ConfirmModal />
+        </ConfirmContext.Provider>
+      </ToastContext.Provider>
+    </AuthProvider>
+  );
+};
 
 export default App;

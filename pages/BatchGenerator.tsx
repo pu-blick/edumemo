@@ -8,10 +8,12 @@ import { Zap, CheckCircle2, AlertCircle, Loader2, Copy, Search, FileDown, ArrowL
 import { Link } from 'react-router-dom';
 import { generateStudentDraft } from '../services/geminiService';
 import * as XLSX from 'xlsx';
+import { useToast } from '../hooks/useToast';
 
 const BatchGenerator: React.FC = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const showToast = useToast();
   const queryParams = new URLSearchParams(location.search);
   const initialClassroomId = queryParams.get('classroomId') || '';
 
@@ -50,7 +52,7 @@ const BatchGenerator: React.FC = () => {
 
   const startBatchProcess = async () => {
     const targetIds: string[] = Array.from(selectedStudentIds);
-    if (targetIds.length === 0) return alert('학생을 선택해 주세요.');
+    if (targetIds.length === 0) { showToast('학생을 선택해 주세요.', 'warning'); return; }
     setIsProcessing(true);
     setProgress({ current: 0, total: targetIds.length });
 

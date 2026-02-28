@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Classroom } from '../types';
 import { getPlanLimits } from '../lib/planLimits';
+import { useToast } from '../hooks/useToast';
+import { useConfirm } from '../hooks/useConfirm';
 import {
   Plus, Trash2, ChevronRight, School, Loader2, Edit2,
   Smartphone, Monitor, Sparkles, CheckCircle
@@ -12,6 +14,8 @@ import { Link } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  const showToast = useToast();
+  const confirm = useConfirm();
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [newClassName, setNewClassName] = useState('');
   const [isAdding, setIsAdding] = useState(false);
@@ -58,7 +62,7 @@ const Dashboard: React.FC = () => {
     const { data: sub } = await supabase.from('subscriptions').select('plan').eq('user_id', user.id).single();
     const limits = getPlanLimits(sub?.plan);
     if (classrooms.length >= limits.maxClasses) {
-      alert(`현재 플랜에서는 최대 ${limits.maxClasses}개의 클래스를 만들 수 있습니다.\n플랜을 업그레이드하여 더 많은 클래스를 운영해 보세요.`);
+      showToast(`현재 플랜에서는 최대 ${limits.maxClasses}개의 클래스를 만들 수 있습니다. 플랜을 업그레이드하여 더 많은 클래스를 운영해 보세요.`, 'warning');
       return;
     }
 
@@ -72,7 +76,7 @@ const Dashboard: React.FC = () => {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     } else {
-      alert('저장 실패');
+      showToast('저장 실패', 'error');
     }
   };
 
@@ -88,11 +92,11 @@ const Dashboard: React.FC = () => {
       .update({ name: editingName.trim() })
       .eq('id', id);
     if (!error) setEditingId(null);
-    else alert('수정 실패');
+    else showToast('수정 실패', 'error');
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`'${name}' 삭제하시겠습니까?`)) return;
+    if (!await confirm(`'${name}' 삭제하시겠습니까?`)) return;
     await supabase.from('classrooms').delete().eq('id', id);
   };
 

@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Subscription, Credits } from '../types';
 import { CheckCircle, Loader2, ArrowLeft, CreditCard, Zap, Mail } from 'lucide-react';
+import { useToast } from '../hooks/useToast';
 
 const PLANS = [
   {
@@ -82,6 +83,7 @@ const COLOR = {
 
 const PricingPage: React.FC = () => {
   const { user, session } = useAuth();
+  const showToast = useToast();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [credits, setCredits] = useState<Credits | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -121,7 +123,7 @@ const PricingPage: React.FC = () => {
 
       const clientKey = (import.meta as any).env?.VITE_TOSS_CLIENT_KEY as string;
       if (!clientKey) {
-        alert('TossPayments 클라이언트 키가 설정되지 않았습니다.');
+        showToast('TossPayments 클라이언트 키가 설정되지 않았습니다.', 'error');
         setProcessingPlan(null);
         return;
       }
@@ -141,7 +143,7 @@ const PricingPage: React.FC = () => {
       });
     } catch (err: any) {
       if (err?.code !== 'USER_CANCEL') {
-        alert((err?.message || '결제 오류') + (err?.code ? ` [${err.code}]` : ''));
+        showToast((err?.message || '결제 오류') + (err?.code ? ` [${err.code}]` : ''), 'error');
       }
       setProcessingPlan(null);
     }
