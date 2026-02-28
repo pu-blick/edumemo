@@ -22,6 +22,10 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // 동일 출처 요청만 처리 (외부 CDN, 폰트 등은 브라우저가 직접 처리)
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
