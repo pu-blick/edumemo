@@ -180,7 +180,7 @@ const PricingPage: React.FC = () => {
           <ArrowLeft size={16} /> 돌아가기
         </Link>
         <h1 className="text-4xl font-black text-slate-800 tracking-tight mb-2">구독 플랜</h1>
-        <p className="text-slate-400 font-medium">선생님의 기록이 더 편해지는 플랜을 선택하세요.</p>
+        <p className="text-sm sm:text-base text-slate-400 font-medium">선생님의 기록이 더 편해지는 플랜을 선택하세요.</p>
       </div>
 
       {/* 현재 플랜 상태 */}
