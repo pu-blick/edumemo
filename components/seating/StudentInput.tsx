@@ -60,14 +60,14 @@ const StudentInput: React.FC<StudentInputProps> = ({ students, setStudents }) =>
       <div className="grid grid-cols-2 sm:grid-cols-1 gap-2.5 sm:gap-3 mb-4 sm:mb-6">
         <button
           onClick={downloadTemplate}
-          className="flex items-center justify-center px-4 py-2.5 sm:py-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-[13px] sm:text-[15px] font-black text-slate-500 uppercase active:scale-95 shadow-sm"
+          className="flex items-center justify-center px-4 py-2.5 sm:py-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-[12px] sm:text-[15px] font-black text-slate-500 uppercase active:scale-95 shadow-sm"
         >
           <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-[#1a4d2e]" />
           양식 받기
         </button>
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="flex items-center justify-center px-4 py-2.5 sm:py-3 bg-[#1a4d2e] text-white rounded-xl hover:bg-[#143a23] transition-all text-[13px] sm:text-[15px] font-black uppercase active:scale-95 shadow-md"
+          className="flex items-center justify-center px-4 py-2.5 sm:py-3 bg-[#1a4d2e] text-white rounded-xl hover:bg-[#143a23] transition-all text-[12px] sm:text-[15px] font-black uppercase active:scale-95 shadow-md"
         >
           <FileUp className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" />
           명단 업로드

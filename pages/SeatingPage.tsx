@@ -289,7 +289,7 @@ const SeatingPage: React.FC = () => {
 
             <div className="space-y-4 pt-4 border-t border-slate-100">
               <div className="space-y-2">
-                <label className="block text-[10px] sm:text-[12px] font-black text-slate-300 uppercase tracking-widest">Operation Mode</label>
+                <label className="hidden sm:block text-[12px] font-black text-slate-300 uppercase tracking-widest">Operation Mode</label>
                 <div className="grid grid-cols-2 bg-slate-50 p-1 rounded-lg sm:rounded-xl border border-slate-200">
                   <button onClick={() => setIsExcludeMode(false)} className={`flex items-center justify-center py-2 sm:py-2.5 rounded-lg text-[12px] sm:text-[14px] font-bold transition-all ${!isExcludeMode ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-slate-100' : 'text-slate-400'}`}>
                     배치 모드
@@ -301,7 +301,7 @@ const SeatingPage: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-[10px] sm:text-[12px] font-black text-slate-300 uppercase tracking-widest">View Option</label>
+                <label className="hidden sm:block text-[12px] font-black text-slate-300 uppercase tracking-widest">View Option</label>
                 <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
                   <button
                     onClick={() => setIsTeacherView(!isTeacherView)}
@@ -368,7 +368,7 @@ const SeatingPage: React.FC = () => {
           {/* 학생 명단 (수동 입력/엑셀 - 학급 미선택 시) */}
           {!selectedClassroomId && (
             <section className="bg-white rounded-xl sm:rounded-2xl flex-1 flex flex-col min-h-0 border border-slate-200 p-4 sm:p-5 shadow-sm">
-              <h2 className="text-[12px] sm:text-[14px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Student List</h2>
+              <h2 className="hidden sm:block text-[14px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Student List</h2>
               <StudentInput students={students} setStudents={setStudents} />
             </section>
           )}
