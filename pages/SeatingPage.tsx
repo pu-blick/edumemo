@@ -305,13 +305,13 @@ const SeatingPage: React.FC = () => {
                 <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
                   <button
                     onClick={() => setIsTeacherView(!isTeacherView)}
-                    className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 bg-white border border-slate-200 rounded-lg sm:rounded-xl text-[12px] sm:text-[14px] font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm group"
+                    className="flex items-center justify-center sm:justify-between px-3 sm:px-4 py-2 sm:py-3 bg-white border border-slate-200 rounded-lg sm:rounded-xl text-[12px] sm:text-[14px] font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm group"
                   >
                     <div className="flex items-center">
                       <Users className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-slate-300 group-hover:text-indigo-600" />
                       {isTeacherView ? "교사 시점" : "학생 시점"}
                     </div>
-                    <span className="text-[8px] sm:text-[10px] bg-slate-100 px-1.5 sm:py-0.5 rounded-full text-slate-400 font-black tracking-tighter">{isTeacherView ? "REAR" : "FRONT"}</span>
+                    <span className="hidden sm:inline text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-full text-slate-400 font-black tracking-tighter">{isTeacherView ? "REAR" : "FRONT"}</span>
                   </button>
 
                   <button
@@ -320,7 +320,7 @@ const SeatingPage: React.FC = () => {
                       setSeatingPlan(prev => prev.map(s => ({ ...s, isRevealed: nextState })));
                       setIsAllRevealed(nextState);
                     }}
-                    className="flex items-center px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-200 rounded-lg sm:rounded-xl text-[12px] sm:text-[14px] font-bold text-slate-700 hover:bg-slate-100 transition-all shadow-sm group"
+                    className="flex items-center justify-center sm:justify-start px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-200 rounded-lg sm:rounded-xl text-[12px] sm:text-[14px] font-bold text-slate-700 hover:bg-slate-100 transition-all shadow-sm group"
                   >
                     {isAllRevealed ? (
                       <><EyeOff className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-slate-400" /> 전체 가리기</>
