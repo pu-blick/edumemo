@@ -235,7 +235,7 @@ const SeatingPage: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-2xl font-black tracking-tight text-slate-800 leading-none mb-0.5 sm:mb-1">자리배치 도우미</h1>
+              <h1 className="text-lg sm:text-2xl font-black tracking-tight text-slate-900 leading-none mb-0.5 sm:mb-1">자리배치 도우미</h1>
               {isSecretMode && (
                 <span className="flex items-center gap-1 text-[10px] sm:text-xs font-bold text-amber-600 bg-amber-50 border border-amber-300 px-1.5 py-0.5 rounded-full">
                   <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> 시크릿
@@ -266,13 +266,13 @@ const SeatingPage: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
-          <button onClick={() => setShowRoulette(true)} className="flex-1 sm:flex-none flex items-center justify-center px-3 sm:px-6 py-2 sm:py-3 bg-white text-rose-600 rounded-lg sm:rounded-xl hover:bg-rose-50 transition-all text-xs sm:text-sm font-medium border border-slate-100 shadow-sm active:scale-95">
+          <button onClick={() => setShowRoulette(true)} className="flex-1 sm:flex-none flex items-center justify-center px-3 sm:px-6 py-2 sm:py-3 bg-white text-rose-600 rounded-lg sm:rounded-xl hover:bg-rose-50 transition-all text-xs sm:text-sm font-medium sm:font-bold border border-slate-100 shadow-sm active:scale-95">
             <Disc className="w-4 h-4 sm:w-6 sm:h-6 mr-1.5 sm:mr-2" /> <span className="whitespace-nowrap">룰렛 추첨</span>
           </button>
-          <button onClick={handleExportImage} className="flex-1 sm:flex-none flex items-center justify-center px-3 sm:px-6 py-2 sm:py-3 bg-white border border-slate-200 rounded-lg sm:rounded-xl hover:bg-slate-50 hover:text-indigo-600 transition-all text-xs sm:text-sm font-medium shadow-sm active:scale-95">
+          <button onClick={handleExportImage} className="flex-1 sm:flex-none flex items-center justify-center px-3 sm:px-6 py-2 sm:py-3 bg-white border border-slate-200 rounded-lg sm:rounded-xl hover:bg-slate-50 hover:text-indigo-600 transition-all text-xs sm:text-sm font-medium sm:font-bold shadow-sm active:scale-95">
             <Printer className="w-4 h-4 sm:w-6 sm:h-6 mr-1.5 sm:mr-2" /> <span className="whitespace-nowrap">이미지 저장</span>
           </button>
-          <button onClick={handleShuffle} disabled={isShuffling} className="flex-1 sm:flex-none flex items-center justify-center px-3 sm:px-8 py-2 sm:py-3 bg-indigo-600 text-white rounded-lg sm:rounded-xl hover:bg-indigo-700 transition-all shadow-xl text-xs sm:text-sm font-medium disabled:opacity-50 active:scale-95">
+          <button onClick={handleShuffle} disabled={isShuffling} className="flex-1 sm:flex-none flex items-center justify-center px-3 sm:px-8 py-2 sm:py-3 bg-indigo-600 text-white rounded-lg sm:rounded-xl hover:bg-indigo-700 transition-all shadow-xl text-xs sm:text-sm font-medium sm:font-bold disabled:opacity-50 active:scale-95">
             {isShuffling ? <Loader2 className="w-4 h-4 sm:w-6 sm:h-6 mr-1.5 sm:mr-3 animate-spin" /> : <Shuffle className="w-4 h-4 sm:w-6 sm:h-6 mr-1.5 sm:mr-3" />}
             <span className="whitespace-nowrap">배치 시작</span>
           </button>
@@ -291,10 +291,10 @@ const SeatingPage: React.FC = () => {
               <div className="space-y-2">
                 <label className="block text-[10px] sm:text-[12px] font-black text-slate-300 uppercase tracking-widest">Operation Mode</label>
                 <div className="grid grid-cols-2 bg-slate-50 p-1 rounded-lg sm:rounded-xl border border-slate-200">
-                  <button onClick={() => setIsExcludeMode(false)} className={`flex items-center justify-center py-2 sm:py-2.5 rounded-lg text-[12px] sm:text-[13px] font-bold transition-all ${!isExcludeMode ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-slate-100' : 'text-slate-400'}`}>
+                  <button onClick={() => setIsExcludeMode(false)} className={`flex items-center justify-center py-2 sm:py-2.5 rounded-lg text-[12px] sm:text-[14px] font-bold transition-all ${!isExcludeMode ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-slate-100' : 'text-slate-400'}`}>
                     배치 모드
                   </button>
-                  <button onClick={() => setIsExcludeMode(true)} className={`flex items-center justify-center py-2 sm:py-2.5 rounded-lg text-[12px] sm:text-[13px] font-bold transition-all ${isExcludeMode ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400'}`}>
+                  <button onClick={() => setIsExcludeMode(true)} className={`flex items-center justify-center py-2 sm:py-2.5 rounded-lg text-[12px] sm:text-[14px] font-bold transition-all ${isExcludeMode ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400'}`}>
                     제외 모드
                   </button>
                 </div>
@@ -399,7 +399,7 @@ const SeatingPage: React.FC = () => {
         <div className="flex-1 flex flex-col min-h-[500px] lg:min-h-0 overflow-hidden rounded-xl sm:rounded-2xl bg-[#f8f5f2] shadow-xl shadow-slate-200/50 border border-slate-200">
           <div className="flex-1 overflow-auto lg:overflow-hidden p-4 sm:p-8 flex flex-col items-center justify-center">
             <div ref={printRef} className="w-full h-full flex flex-col items-center justify-center bg-[#f8f5f2] rounded-xl py-4">
-              <h2 className="text-xl sm:text-3xl font-black text-slate-900 mb-4 sm:mb-8 shrink-0 tracking-tight text-center px-4">{title}</h2>
+              <h2 className="text-xl sm:text-[2rem] font-black sm:font-extrabold text-slate-900 mb-4 sm:mb-8 shrink-0 tracking-tight text-center px-4">{title}</h2>
 
               {!isTeacherView && <Blackboard />}
 
