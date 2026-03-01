@@ -300,8 +300,8 @@ const PricingPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-500 text-[13px] font-black flex items-center justify-center">F</div>
           <div>
-            <span className="font-black text-slate-600 text-sm">Free 플랜</span>
-            <span className="text-[12px] text-slate-400 ml-2">가입 시 크레딧 10개 지급 · 클래스 1개, 클래스당 최대 3명</span>
+            <span className="font-black text-slate-600 text-sm block sm:inline">Free 플랜</span>
+            <span className="text-[12px] text-slate-400 block sm:inline sm:ml-2 mt-0.5 sm:mt-0">가입 시 크레딧 10개 지급 · 클래스 1개, 클래스당 최대 3명</span>
           </div>
         </div>
         {(subscription?.plan === 'free' || !subscription?.plan) && (
