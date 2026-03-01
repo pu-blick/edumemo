@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { X, RefreshCw, Download, FileUp, Award, Type, Plus, Minus, Users, Sparkles } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { SeatingStudent, RouletteItem } from '../../types/seating';
@@ -8,23 +8,40 @@ interface RouletteProps {
   students: SeatingStudent[];
 }
 
-const VISIBLE_COUNT = 5;
-const REPEAT_COUNT = 7;
-const SPIN_DURATION = 5000;
+const WHEEL_SPIN_DURATION = 5000;
+const WHEEL_SPIN_MIN_ROTATIONS = 5;
+const WHEEL_SPIN_MAX_ROTATIONS = 8;
 const BETWEEN_SPIN_PAUSE = 1300;
 
-const SLOT_COLORS = [
-  { bg: '#fce4ec', text: '#880e4f' },  // 핑크
-  { bg: '#fff9c4', text: '#f57f17' },  // 노랑
-  { bg: '#e0f7fa', text: '#006064' },  // 하늘
-  { bg: '#f3e5f5', text: '#6a1b9a' },  // 보라
-  { bg: '#e0f2f1', text: '#004d40' },  // 민트
-  { bg: '#fff3e0', text: '#e65100' },  // 피치
-  { bg: '#ede7f6', text: '#4527a0' },  // 라벤더
-  { bg: '#f1f8e9', text: '#33691e' },  // 라임
+const WHEEL_COLORS = [
+  { bg: '#fce4ec', text: '#880e4f' },
+  { bg: '#fff9c4', text: '#f57f17' },
+  { bg: '#e0f7fa', text: '#006064' },
+  { bg: '#f3e5f5', text: '#6a1b9a' },
+  { bg: '#e0f2f1', text: '#004d40' },
+  { bg: '#fff3e0', text: '#e65100' },
+  { bg: '#ede7f6', text: '#4527a0' },
+  { bg: '#f1f8e9', text: '#33691e' },
 ];
 
 const CONFETTI_COLORS = ['#f472b6', '#facc15', '#60a5fa', '#a78bfa', '#34d399', '#fb923c', '#c084fc', '#4ade80'];
+
+function calculateFontSize(segmentCount: number, _radius: number, isMobile: boolean): number {
+  const baseSize = isMobile ? 11 : 15;
+  if (segmentCount <= 6) return baseSize;
+  if (segmentCount <= 12) return Math.max(baseSize - 2, 9);
+  if (segmentCount <= 20) return Math.max(baseSize - 4, 8);
+  return Math.max(baseSize - 6, 7);
+}
+
+function truncateText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  let truncated = text;
+  while (truncated.length > 1 && ctx.measureText(truncated + '..').width > maxWidth) {
+    truncated = truncated.slice(0, -1);
+  }
+  return truncated + '..';
+}
 
 const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
   const [items, setItems] = useState<RouletteItem[]>([]);
@@ -36,12 +53,12 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const drumRef = useRef<HTMLDivElement>(null);
-  const itemsRef = useRef<RouletteItem[]>([]);
-  const runSpinCycleRef = useRef<(spinIdx: number, allWinners: RouletteItem[]) => void>(null!);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number>(0);
+  const currentAngleRef = useRef<number>(0);
+  const isSpinningRef = useRef<boolean>(false);
 
-  const itemH = isMobile ? 64 : 88;
-  const drumH = itemH * VISIBLE_COUNT;
+  const canvasSize = isMobile ? 280 : 400;
 
   const confettiPieces = useMemo(() =>
     Array.from({ length: 15 }, (_, i) => ({
@@ -60,13 +77,253 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
     return () => window.removeEventListener('resize', handler);
   }, []);
 
-  useEffect(() => { itemsRef.current = items; }, [items]);
-
   useEffect(() => {
     if (students.length > 0 && items.length === 0) {
       setItems(students.map(s => ({ id: s.id, text: s.name })));
     }
   }, [students]);
+
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, []);
+
+  const drawWheel = useCallback((rotationAngle: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const size = canvasSize;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    canvas.style.width = `${size}px`;
+    canvas.style.height = `${size}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const center = size / 2;
+    const radius = center - 6;
+    const segmentCount = items.length;
+
+    ctx.clearRect(0, 0, size, size);
+
+    // outer shadow
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(center, center, radius + 3, 0, Math.PI * 2);
+    ctx.shadowColor = 'rgba(0,0,0,0.15)';
+    ctx.shadowBlur = 16;
+    ctx.shadowOffsetY = 4;
+    ctx.fillStyle = '#dc2626';
+    ctx.fill();
+    ctx.restore();
+
+    if (segmentCount === 0) {
+      ctx.beginPath();
+      ctx.arc(center, center, radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#f8f8f8';
+      ctx.fill();
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 5;
+      ctx.stroke();
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = `bold ${isMobile ? 13 : 17}px 'Noto Sans KR', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('항목을 추가해주세요', center, center);
+      // center hub
+      ctx.beginPath();
+      ctx.arc(center, center, 14, 0, Math.PI * 2);
+      ctx.fillStyle = '#dc2626';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(center, center, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      return;
+    }
+
+    const segmentAngle = (Math.PI * 2) / segmentCount;
+
+    // draw segments
+    for (let i = 0; i < segmentCount; i++) {
+      const startAngle = rotationAngle + i * segmentAngle;
+      const endAngle = startAngle + segmentAngle;
+      const color = WHEEL_COLORS[i % WHEEL_COLORS.length];
+
+      ctx.beginPath();
+      ctx.moveTo(center, center);
+      ctx.arc(center, center, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = color.bg;
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // draw text
+    const fontSize = calculateFontSize(segmentCount, radius, isMobile);
+    for (let i = 0; i < segmentCount; i++) {
+      const startAngle = rotationAngle + i * segmentAngle;
+      const color = WHEEL_COLORS[i % WHEEL_COLORS.length];
+
+      ctx.save();
+      ctx.translate(center, center);
+      ctx.rotate(startAngle + segmentAngle / 2);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = color.text;
+      ctx.font = `bold ${fontSize}px 'Noto Sans KR', sans-serif`;
+
+      const maxWidth = radius * 0.5;
+      const displayText = truncateText(ctx, items[i].text, maxWidth);
+      const textX = radius * 0.62;
+      ctx.fillText(displayText, textX, 0);
+      ctx.restore();
+    }
+
+    // outer ring
+    ctx.beginPath();
+    ctx.arc(center, center, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
+    // inner ring
+    ctx.beginPath();
+    ctx.arc(center, center, radius - 2, 0, Math.PI * 2);
+    ctx.strokeStyle = '#fca5a5';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // tick marks on outer ring
+    for (let i = 0; i < segmentCount; i++) {
+      const angle = rotationAngle + i * segmentAngle;
+      ctx.beginPath();
+      ctx.moveTo(center + Math.cos(angle) * (radius - 12), center + Math.sin(angle) * (radius - 12));
+      ctx.lineTo(center + Math.cos(angle) * radius, center + Math.sin(angle) * radius);
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // decorative dots on outer ring
+    const dotCount = Math.max(segmentCount * 2, 16);
+    for (let i = 0; i < dotCount; i++) {
+      const angle = (Math.PI * 2 / dotCount) * i;
+      const dotX = center + Math.cos(angle) * (radius + 0.5);
+      const dotY = center + Math.sin(angle) * (radius + 0.5);
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = i % 2 === 0 ? '#fef2f2' : '#fecaca';
+      ctx.fill();
+    }
+
+    // center hub
+    ctx.beginPath();
+    ctx.arc(center, center, isMobile ? 16 : 22, 0, Math.PI * 2);
+    ctx.fillStyle = '#dc2626';
+    ctx.fill();
+    ctx.strokeStyle = '#991b1b';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(center, center, isMobile ? 9 : 12, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+  }, [items, isMobile, canvasSize]);
+
+  // redraw on items/size change
+  useEffect(() => {
+    drawWheel(currentAngleRef.current);
+  }, [drawWheel]);
+
+  // ensure font is loaded before first draw
+  useEffect(() => {
+    document.fonts.ready.then(() => {
+      drawWheel(currentAngleRef.current);
+    });
+  }, [drawWheel]);
+
+  const spinWheel = useCallback((winnerIndex: number, onComplete: () => void) => {
+    const segmentCount = items.length;
+    if (segmentCount === 0) return;
+
+    const segmentAngle = (Math.PI * 2) / segmentCount;
+
+    // pointer is at top = -PI/2
+    // we want: rotation + winnerIndex * segmentAngle + segmentAngle/2 = -PI/2
+    const baseTargetAngle = -Math.PI / 2 - winnerIndex * segmentAngle - segmentAngle / 2;
+    const jitter = (Math.random() - 0.5) * segmentAngle * 0.6;
+    const targetAngle = baseTargetAngle + jitter;
+
+    const extraRotations = WHEEL_SPIN_MIN_ROTATIONS + Math.random() * (WHEEL_SPIN_MAX_ROTATIONS - WHEEL_SPIN_MIN_ROTATIONS);
+    const totalRotation = targetAngle - currentAngleRef.current - extraRotations * Math.PI * 2;
+
+    const startAngle = currentAngleRef.current;
+    const startTime = performance.now();
+
+    const animate = (time: number) => {
+      const elapsed = time - startTime;
+      const progress = Math.min(elapsed / WHEEL_SPIN_DURATION, 1);
+      // cubic ease-out
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const currentAngle = startAngle + totalRotation * eased;
+      currentAngleRef.current = currentAngle;
+      drawWheel(currentAngle);
+
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(animate);
+      } else {
+        currentAngleRef.current = (startAngle + totalRotation) % (Math.PI * 2);
+        drawWheel(currentAngleRef.current);
+        onComplete();
+      }
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+  }, [items, drawWheel]);
+
+  const startSpin = () => {
+    if (isSpinning || items.length < winnerCount) {
+      if (items.length < winnerCount)
+        alert(`참여 항목 수(${items.length})가 당첨 인원(${winnerCount})보다 적습니다.`);
+      return;
+    }
+
+    const shuffled = [...items].sort(() => Math.random() - 0.5);
+    const allWinners = shuffled.slice(0, winnerCount);
+    setWinners([]);
+    setIsSpinning(true);
+    isSpinningRef.current = true;
+
+    const runCycle = (spinIdx: number) => {
+      const winner = allWinners[spinIdx];
+      const winnerOrigIdx = items.findIndex(i => i.id === winner.id);
+
+      spinWheel(winnerOrigIdx, () => {
+        setWinners(prev => [...prev, winner]);
+
+        if (spinIdx + 1 < allWinners.length) {
+          setTimeout(() => {
+            if (isSpinningRef.current) runCycle(spinIdx + 1);
+          }, BETWEEN_SPIN_PAUSE);
+        } else {
+          setIsSpinning(false);
+          isSpinningRef.current = false;
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3');
+          audio.volume = 0.2;
+          audio.play().catch(() => {});
+        }
+      });
+    };
+
+    runCycle(0);
+  };
 
   const downloadRouletteTemplate = () => {
     const data = [["학번", "이름"], ["10101", "김철수"], ["10102", "이영희"]];
@@ -108,64 +365,6 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
     setNewItemText("");
   };
 
-  runSpinCycleRef.current = (spinIdx: number, allWinners: RouletteItem[]) => {
-    const currentItems = itemsRef.current;
-    if (currentItems.length === 0) return;
-
-    const winner = allWinners[spinIdx];
-    const winnerOrigIdx = currentItems.findIndex(i => i.id === winner.id);
-    if (winnerOrigIdx === -1) return;
-
-    const targetBlock = REPEAT_COUNT - 2;
-    const winnerPosInExtended = targetBlock * currentItems.length + winnerOrigIdx;
-    const centerOffset = Math.floor(VISIBLE_COUNT / 2);
-    const targetY = -((winnerPosInExtended - centerOffset) * itemH);
-
-    if (drumRef.current) {
-      drumRef.current.style.transition = 'none';
-      drumRef.current.style.transform = 'translateY(0px)';
-    }
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (drumRef.current) {
-          drumRef.current.style.transition = `transform ${SPIN_DURATION}ms cubic-bezier(0.1, 0.95, 0.2, 1)`;
-          drumRef.current.style.transform = `translateY(${targetY}px)`;
-        }
-      });
-    });
-
-    setTimeout(() => {
-      setWinners(prev => [...prev, winner]);
-
-      if (spinIdx + 1 < allWinners.length) {
-        setTimeout(() => {
-          runSpinCycleRef.current(spinIdx + 1, allWinners);
-        }, BETWEEN_SPIN_PAUSE);
-      } else {
-        setIsSpinning(false);
-        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3');
-        audio.volume = 0.2;
-        audio.play().catch(() => {});
-      }
-    }, SPIN_DURATION);
-  };
-
-  const startSpin = () => {
-    if (isSpinning || items.length < winnerCount) {
-      if (items.length < winnerCount)
-        alert(`참여 항목 수(${items.length})가 당첨 인원(${winnerCount})보다 적습니다.`);
-      return;
-    }
-    const shuffled = [...items].sort(() => Math.random() - 0.5);
-    const allWinners = shuffled.slice(0, winnerCount);
-    setWinners([]);
-    setIsSpinning(true);
-    runSpinCycleRef.current(0, allWinners);
-  };
-
-  const extendedItems = Array.from({ length: REPEAT_COUNT }, () => items).flat();
-
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-6 font-sans overflow-hidden">
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={onClose} />
@@ -175,72 +374,65 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
           <X className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
         </button>
 
-        {/* 좌측: 슬롯 + START */}
-        <div className="flex-[1.2] flex flex-col items-center justify-center space-y-4 sm:space-y-8">
+        {/* 좌측: 원형 휠 + START */}
+        <div className="flex-[1.2] flex flex-col items-center justify-center space-y-3 sm:space-y-6">
           <div className="text-center">
             <h2 className="text-2xl sm:text-5xl font-black tracking-tight mb-1 sm:mb-2"
-              style={{ fontFamily: "'Jua', sans-serif", background: 'linear-gradient(135deg, #f472b6, #a78bfa, #60a5fa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              style={{
+                fontFamily: "'Noto Sans KR', sans-serif",
+                fontWeight: 900,
+                background: 'linear-gradient(135deg, #ef4444, #dc2626, #b91c1c)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}>
               행운의 룰렛
             </h2>
           </div>
 
-          <div className="w-[240px] sm:w-[360px] lg:w-[420px]">
-            <div className="relative">
-              {/* 화살표 제거됨 - 글로우 하이라이트로 대체 */}
-              <div className="relative overflow-hidden rounded-2xl shadow-2xl"
-                style={{ height: `${drumH}px`, border: '2.5px solid rgba(99,102,241,0.2)', boxShadow: '0 8px 32px -4px rgba(99,102,241,0.15), 0 2px 8px rgba(0,0,0,0.06)' }}>
-                {/* 중앙 하이라이트 밴드 - 글로우 */}
-                <div className="absolute inset-x-0 pointer-events-none z-10"
-                  style={{ top: `${Math.floor(VISIBLE_COUNT / 2) * itemH}px`, height: `${itemH}px`, backgroundColor: 'rgba(99,102,241,0.08)', borderTop: '2.5px solid rgba(99,102,241,0.4)', borderBottom: '2.5px solid rgba(99,102,241,0.4)', boxShadow: '0 0 20px rgba(99,102,241,0.15), inset 0 0 20px rgba(99,102,241,0.05)' }} />
-                <div className="absolute top-0 inset-x-0 pointer-events-none z-10"
-                  style={{ height: `${itemH * 1.2}px`, background: 'linear-gradient(to bottom, rgba(255,255,255,0.92), transparent)' }} />
-                <div className="absolute bottom-0 inset-x-0 pointer-events-none z-10"
-                  style={{ height: `${itemH * 1.2}px`, background: 'linear-gradient(to top, rgba(255,255,255,0.92), transparent)' }} />
-
-                <div ref={drumRef} className="absolute top-0 inset-x-0" style={{ willChange: 'transform' }}>
-                  {extendedItems.length > 0 ? (
-                    extendedItems.map((item, idx) => {
-                      const originalIdx = idx % Math.max(items.length, 1);
-                      const color = SLOT_COLORS[originalIdx % SLOT_COLORS.length];
-                      return (
-                        <div key={`${item.id}-${idx}`} className="flex items-center justify-center select-none px-4 sm:px-6"
-                          style={{ height: `${itemH}px`, backgroundColor: color.bg }}>
-                          <span className="text-lg sm:text-3xl lg:text-4xl font-black text-center leading-tight truncate w-full"
-                            style={{ color: color.text }}>{item.text}</span>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="flex items-center justify-center text-slate-300 text-sm sm:text-lg font-bold bg-white"
-                      style={{ height: `${drumH}px` }}>항목을 추가해주세요</div>
-                  )}
-                </div>
-              </div>
+          {/* 휠 컨테이너 */}
+          <div className="relative" style={{ width: `${canvasSize}px`, height: `${canvasSize}px` }}>
+            {/* 고정 포인터 (12시 방향) */}
+            <div className="absolute left-1/2 -translate-x-1/2 z-10" style={{ top: '-10px' }}>
+              <svg width={isMobile ? 28 : 36} height={isMobile ? 34 : 44} viewBox="0 0 36 44">
+                <defs>
+                  <filter id="pointer-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.3" />
+                  </filter>
+                </defs>
+                <polygon points="18,44 2,0 34,0" fill="#dc2626" stroke="#991b1b" strokeWidth="1.5" filter="url(#pointer-shadow)" />
+                <polygon points="18,36 8,6 28,6" fill="#ef4444" />
+              </svg>
             </div>
 
-            {winners.length > 0 && isSpinning && (
-              <div className="mt-3 sm:mt-5 flex flex-wrap gap-1.5 sm:gap-2 justify-center">
-                {winners.map((w, i) => {
-                  const originalIdx = items.findIndex(it => it.id === w.id);
-                  const color = SLOT_COLORS[(originalIdx >= 0 ? originalIdx : i) % SLOT_COLORS.length];
-                  return (
-                    <span key={w.id} className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-black text-sm sm:text-lg shadow border"
-                      style={{ backgroundColor: color.bg, color: color.text, borderColor: color.text + '44' }}>{w.text}</span>
-                  );
-                })}
-              </div>
-            )}
+            <canvas ref={canvasRef} className="rounded-full" />
           </div>
 
+          {/* 진행 중 당첨자 표시 */}
+          {winners.length > 0 && isSpinning && (
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+              {winners.map((w, i) => {
+                const originalIdx = items.findIndex(it => it.id === w.id);
+                const color = WHEEL_COLORS[(originalIdx >= 0 ? originalIdx : i) % WHEEL_COLORS.length];
+                return (
+                  <span key={w.id} className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-black text-sm sm:text-lg shadow border"
+                    style={{ backgroundColor: color.bg, color: color.text, borderColor: color.text + '44' }}>{w.text}</span>
+                );
+              })}
+            </div>
+          )}
+
           {isSpinning && (
-            <p className="text-indigo-400 font-bold text-sm sm:text-lg animate-pulse">
+            <p className="text-red-500 font-bold text-sm sm:text-lg animate-pulse">
               {winners.length + 1} / {winnerCount}번째 추첨 중...
             </p>
           )}
 
           <button onClick={startSpin} disabled={isSpinning || items.length < 1}
             className="w-full max-w-[280px] sm:max-w-[340px] py-3 sm:py-5 text-white rounded-xl shadow-lg transition-all font-black text-base sm:text-2xl tracking-widest disabled:opacity-30 active:scale-95 flex items-center justify-center uppercase"
-            style={{ background: isSpinning ? '#6366f1' : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
+            style={{
+              background: isSpinning ? '#dc2626' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+              boxShadow: '0 4px 20px rgba(220,38,38,0.35)'
+            }}>
             {isSpinning ? <RefreshCw className="w-5 h-5 sm:w-7 sm:h-7 animate-spin" /> : <><Sparkles className="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3" /> START</>}
           </button>
         </div>
@@ -251,7 +443,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
             <div className="space-y-1.5 sm:space-y-2.5">
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-500"><Type className="w-4 h-4 sm:w-5 sm:h-5" /><span className="text-[15px] sm:text-[18px] font-medium tracking-tight">주제</span></div>
               <input type="text" value={subject} onChange={e => setSubject(e.target.value)} disabled={isSpinning}
-                className="w-full px-3 sm:px-5 py-2.5 sm:py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-[15px] sm:text-[18px] font-bold shadow-sm focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-400 outline-none transition-all placeholder:text-slate-300 disabled:opacity-50" />
+                className="w-full px-3 sm:px-5 py-2.5 sm:py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-[15px] sm:text-[18px] font-bold shadow-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-400 outline-none transition-all placeholder:text-slate-300 disabled:opacity-50" />
             </div>
             <div className="space-y-1.5 sm:space-y-2.5">
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-500"><Users className="w-4 h-4 sm:w-5 sm:h-5" /><span className="text-[15px] sm:text-[18px] font-medium tracking-tight">당첨 인원</span></div>
@@ -271,7 +463,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
                 <input type="text" value={newItemText} onChange={e => setNewItemText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAddItem()} disabled={isSpinning}
                   placeholder="항목명" className="flex-1 min-w-0 px-3 sm:px-5 py-2.5 sm:py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-[15px] sm:text-[18px] font-bold shadow-sm outline-none placeholder:text-slate-300 disabled:opacity-50" />
                 <button onClick={handleAddItem} disabled={isSpinning}
-                  className="px-3 sm:px-6 bg-indigo-600 text-white rounded-xl font-black text-[14px] sm:text-[16px] hover:bg-indigo-700 transition-all flex items-center justify-center shadow-md active:scale-95 group disabled:opacity-50 shrink-0 whitespace-nowrap">
+                  className="px-3 sm:px-6 bg-red-600 text-white rounded-xl font-black text-[14px] sm:text-[16px] hover:bg-red-700 transition-all flex items-center justify-center shadow-md active:scale-95 group disabled:opacity-50 shrink-0 whitespace-nowrap">
                   <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 group-hover:rotate-90 transition-transform" /> 추가
                 </button>
               </div>
@@ -280,12 +472,12 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
 
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <button onClick={downloadRouletteTemplate} disabled={isSpinning}
-              className="flex items-center justify-center py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-xl hover:bg-indigo-50 transition-all text-[14px] sm:text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
-              <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-indigo-500" /> 양식 받기
+              className="flex items-center justify-center py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-xl hover:bg-red-50 transition-all text-[14px] sm:text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
+              <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-red-500" /> 양식 받기
             </button>
             <button onClick={() => fileInputRef.current?.click()} disabled={isSpinning}
-              className="flex items-center justify-center py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-xl hover:bg-indigo-50 transition-all text-[14px] sm:text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
-              <FileUp className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-indigo-500" /> 파일 업로드
+              className="flex items-center justify-center py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-xl hover:bg-red-50 transition-all text-[14px] sm:text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
+              <FileUp className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-red-500" /> 파일 업로드
             </button>
             <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".xlsx,.xls" />
           </div>
@@ -316,7 +508,6 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
         {/* 당첨 결과 오버레이 */}
         {winners.length > 0 && !isSpinning && (
           <div className="absolute inset-0 z-[110] flex flex-col items-center justify-center bg-white/95 backdrop-blur-xl animate-in fade-in duration-500 p-6 sm:p-12 text-center overflow-hidden rounded-2xl">
-            {/* 컨페티 */}
             {confettiPieces.map(piece => (
               <div
                 key={piece.id}
@@ -341,7 +532,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
               <div className="flex flex-wrap justify-center gap-3 sm:gap-6 py-3 sm:py-4 max-h-[45vh] overflow-y-auto w-full px-4">
                 {winners.map((win, idx) => {
                   const originalIdx = items.findIndex(it => it.id === win.id);
-                  const color = SLOT_COLORS[(originalIdx >= 0 ? originalIdx : idx) % SLOT_COLORS.length];
+                  const color = WHEEL_COLORS[(originalIdx >= 0 ? originalIdx : idx) % WHEEL_COLORS.length];
                   return (
                     <div key={win.id} className="animate-in zoom-in slide-in-from-bottom-8 duration-500" style={{ animationDelay: `${idx * 150}ms` }}>
                       <h3
@@ -356,7 +547,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
               </div>
             </div>
             <button onClick={() => setWinners([])}
-              className="relative z-10 px-14 sm:px-32 py-3 sm:py-6 bg-indigo-600 text-white rounded-xl font-black text-lg sm:text-3xl hover:bg-indigo-700 transition-all active:scale-95 shadow-xl">확인</button>
+              className="relative z-10 px-14 sm:px-32 py-3 sm:py-6 bg-red-600 text-white rounded-xl font-black text-lg sm:text-3xl hover:bg-red-700 transition-all active:scale-95 shadow-xl">확인</button>
           </div>
         )}
       </div>
