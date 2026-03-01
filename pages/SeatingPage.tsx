@@ -369,7 +369,16 @@ const SeatingPage: React.FC = () => {
           {!selectedClassroomId && (
             <section className="bg-white rounded-xl sm:rounded-2xl flex-1 flex flex-col min-h-0 border border-slate-200 p-4 sm:p-5 shadow-sm">
               <h2 className="hidden sm:block text-[14px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Student List</h2>
-              <StudentInput students={students} setStudents={setStudents} />
+              <StudentInput
+                students={students}
+                setStudents={setStudents}
+                onRevealAll={() => {
+                  const nextState = !isAllRevealed;
+                  setSeatingPlan(prev => prev.map(s => ({ ...s, isRevealed: nextState })));
+                  setIsAllRevealed(nextState);
+                }}
+                onShuffle={handleShuffle}
+              />
             </section>
           )}
 

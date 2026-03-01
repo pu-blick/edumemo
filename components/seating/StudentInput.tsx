@@ -1,14 +1,16 @@
 import React, { useRef } from 'react';
 import { SeatingStudent } from '../../types/seating';
-import { Download, FileUp } from 'lucide-react';
+import { Download, FileUp, Eye, Shuffle } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 interface StudentInputProps {
   students: SeatingStudent[];
   setStudents: (students: SeatingStudent[]) => void;
+  onRevealAll?: () => void;
+  onShuffle?: () => void;
 }
 
-const StudentInput: React.FC<StudentInputProps> = ({ students, setStudents }) => {
+const StudentInput: React.FC<StudentInputProps> = ({ students, setStudents, onRevealAll, onShuffle }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const downloadTemplate = () => {
@@ -75,11 +77,21 @@ const StudentInput: React.FC<StudentInputProps> = ({ students, setStudents }) =>
         <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".xlsx, .xls" className="hidden" />
       </div>
 
-      <div className="mt-auto pt-4 pb-1 border-t border-slate-50 flex items-center justify-center">
+      <div className="mt-auto pt-4 pb-1 border-t border-slate-50 flex items-center justify-center gap-3">
+        {onRevealAll && (
+          <button onClick={onRevealAll} className="sm:hidden w-9 h-9 flex items-center justify-center bg-slate-100 border border-slate-200 rounded-full active:scale-95 transition-all shadow-sm">
+            <Eye className="w-4 h-4 text-indigo-600" />
+          </button>
+        )}
         <div className="bg-slate-50/80 px-4 py-2 rounded-full flex items-center shadow-inner border border-slate-100">
           <span className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] mr-3 whitespace-nowrap">Registered</span>
           <span className="text-[14px] sm:text-[16px] font-black text-[#1a4d2e]">{students.length}명</span>
         </div>
+        {onShuffle && (
+          <button onClick={onShuffle} className="sm:hidden w-9 h-9 flex items-center justify-center bg-indigo-600 rounded-full active:scale-95 transition-all shadow-md">
+            <Shuffle className="w-4 h-4 text-white" />
+          </button>
+        )}
       </div>
     </div>
   );
