@@ -369,13 +369,13 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-6 font-sans overflow-hidden">
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative w-full max-w-6xl bg-white rounded-2xl p-4 sm:p-10 shadow-2xl flex flex-col lg:flex-row gap-4 sm:gap-8 lg:gap-12 animate-in fade-in zoom-in duration-300 max-h-[95vh] overflow-y-auto border border-slate-200">
+      <div className="relative w-full max-w-6xl bg-white rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-10 animate-in fade-in zoom-in duration-300 max-h-[95vh] overflow-y-auto border border-slate-200">
         <button onClick={onClose} className="absolute top-3 right-3 sm:top-4 sm:right-6 p-1.5 sm:p-2 hover:bg-slate-100 rounded-full transition-all z-50">
           <X className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
         </button>
 
         {/* 좌측: 원형 휠 + START */}
-        <div className="flex-[1.2] flex flex-col items-center justify-center space-y-3 sm:space-y-6">
+        <div className="flex-[1.2] flex flex-col items-center justify-center space-y-2 sm:space-y-4">
           <div className="text-center">
             <h2 className="text-2xl sm:text-5xl font-black tracking-tight mb-1 sm:mb-2"
               style={{
