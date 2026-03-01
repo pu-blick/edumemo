@@ -235,7 +235,7 @@ const SeatingPage: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-2xl font-black tracking-tight text-slate-900 leading-none mb-0.5 sm:mb-1">자리배치 도우미</h1>
+              <h1 className="text-lg sm:text-2xl font-black tracking-tight text-slate-900 leading-none mb-0.5 sm:mb-1" style={{ WebkitTextStroke: '0.5px' }}>자리배치 도우미</h1>
               {isSecretMode && (
                 <span className="flex items-center gap-1 text-[10px] sm:text-xs font-bold text-amber-600 bg-amber-50 border border-amber-300 px-1.5 py-0.5 rounded-full">
                   <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> 시크릿
@@ -399,7 +399,7 @@ const SeatingPage: React.FC = () => {
         <div className="flex-1 flex flex-col min-h-[500px] lg:min-h-0 overflow-hidden rounded-xl sm:rounded-2xl bg-[#f8f5f2] shadow-xl shadow-slate-200/50 border border-slate-200">
           <div className="flex-1 overflow-auto lg:overflow-hidden p-4 sm:p-8 flex flex-col items-center justify-center">
             <div ref={printRef} className="w-full h-full flex flex-col items-center justify-center bg-[#f8f5f2] rounded-xl py-4">
-              <h2 className="text-xl sm:text-[2rem] font-black sm:font-extrabold text-slate-900 mb-4 sm:mb-8 shrink-0 tracking-tight text-center px-4">{title}</h2>
+              <h2 className="text-xl sm:text-[2.2rem] font-black text-slate-900 mb-4 sm:mb-8 shrink-0 tracking-tight text-center px-4">{title}</h2>
 
               {!isTeacherView && <Blackboard />}
 
