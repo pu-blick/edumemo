@@ -24,7 +24,7 @@ const SeatingGrid: React.FC<SeatingGridProps> = ({ config, seatingPlan, onSeatCl
 
     return (
       <div
-        className="grid gap-3 sm:gap-6 w-full max-w-full place-items-center"
+        className="grid gap-1.5 sm:gap-6 w-full max-w-full place-items-center"
         style={{ gridTemplateColumns: `repeat(${config.cols}, minmax(0, 1fr))` }}
       >
         {displayRows.flat().map((seat) => {
@@ -63,13 +63,13 @@ const SeatingGrid: React.FC<SeatingGridProps> = ({ config, seatingPlan, onSeatCl
                    <X className="w-4 h-4 sm:w-8 sm:h-8 text-slate-300" />
                 </div>
               ) : seat.isRevealed ? (
-                <div className="capture-seat-content flex flex-col items-center justify-center w-full h-full p-1 sm:p-4 text-center space-y-0 sm:space-y-0.5 overflow-hidden">
+                <div className="capture-seat-content flex flex-col items-center justify-center w-full h-full p-0.5 sm:p-4 text-center space-y-0 sm:space-y-0.5 overflow-hidden">
                   {studentId && (
-                    <span className="capture-text-id font-medium text-black text-[10px] sm:text-sm lg:text-base leading-tight">
+                    <span className="capture-text-id font-medium text-black text-[9px] sm:text-sm lg:text-base leading-tight">
                       {studentId}
                     </span>
                   )}
-                  <span className="capture-text-name font-black text-slate-900 text-[11px] sm:text-base lg:text-lg leading-tight truncate w-full px-1">
+                  <span className="capture-text-name font-black text-slate-900 text-[10px] sm:text-base lg:text-lg leading-tight truncate w-full px-0.5">
                     {studentName}
                   </span>
                 </div>
