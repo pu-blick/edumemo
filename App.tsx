@@ -247,7 +247,7 @@ const AppContent: React.FC = () => {
               <div className="hidden md:block text-xs text-slate-400 leading-relaxed space-y-0.5">
                 <p className="font-bold text-slate-500">주식회사 퍼블릭스카이</p>
                 <p>대표자: 하상욱 | 사업자등록번호: 618-81-37189 | 통신판매업 신고번호: 2023-세종아름-0260</p>
-                <p>주소: 세종특별자치시 도움3로 105-5 806호 | 전화: 010-2314-4577 | 이메일: publicsky7@gmail.com</p>
+                <p>주소: 세종특별자치시 도움3로 105-5 806호 | 이메일: publicsky7@gmail.com | 운영시간: 10:00 ~ 17:00</p>
               </div>
 
               {/* 모바일: 항목별 줄바꿈 */}
@@ -257,8 +257,8 @@ const AppContent: React.FC = () => {
                 <p>사업자등록번호: 618-81-37189</p>
                 <p>통신판매업 신고번호: 2023-세종아름-0260</p>
                 <p>주소: 세종특별자치시 도움3로 105-5 806호</p>
-                <p>전화: 010-2314-4577</p>
                 <p>이메일: publicsky7@gmail.com</p>
+                <p>운영시간: 10:00 ~ 17:00</p>
               </div>
 
               {user && (
