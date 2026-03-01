@@ -1,4 +1,4 @@
-const CACHE_NAME = 'edumemo-v2';
+const CACHE_NAME = 'edumemo-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

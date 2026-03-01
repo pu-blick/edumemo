@@ -198,14 +198,13 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <h2 className="text-[1.35rem] font-black text-slate-800 mb-1 tracking-tight flex-grow group-hover:text-indigo-600 transition-colors">{classroom.name}</h2>
+              <div className="flex items-center justify-between flex-grow">
+                <h2 className="text-[1.35rem] font-black text-slate-800 tracking-tight group-hover:text-indigo-600 transition-colors">{classroom.name}</h2>
+                <Link to={`/classroom/${classroom.id}`} className="flex items-center gap-1 text-indigo-600 font-bold hover:underline text-[11px] shrink-0">
+                  Enter <ChevronRight size={14} />
+                </Link>
+              </div>
             )}
-
-            <div className="flex justify-end items-center mt-3 pt-2.5 border-t border-slate-50">
-              <Link to={`/classroom/${classroom.id}`} className="flex items-center gap-1 text-indigo-600 font-bold hover:underline text-[11px]">
-                Enter <ChevronRight size={14} />
-              </Link>
-            </div>
           </div>
         ))}
       </div>
