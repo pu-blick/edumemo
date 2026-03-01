@@ -9,7 +9,7 @@ import { useToast } from '../hooks/useToast';
 const PLANS = [
   {
     id: 'pro',
-    number: '①',
+    number: 'B',
     name: 'T-buff Basic',
     price: 9900,
     priceDisplay: '월 9,900원',
@@ -23,12 +23,13 @@ const PLANS = [
       '학급 전체 생기부 일괄 작성',
       '일괄 작성 엑셀 다운로드',
       '음성 기록 지원',
+      '클래스당 최대 50명',
       '클래스 최대 5개 운영',
     ],
   },
   {
     id: 'plus',
-    number: '②',
+    number: 'P',
     name: 'T-buff Plus',
     price: 15900,
     priceDisplay: '월 15,900원',
@@ -43,6 +44,7 @@ const PLANS = [
       '학급 전체 생기부 일괄 작성',
       '일괄 작성 엑셀 다운로드',
       '음성 기록 지원',
+      '클래스당 최대 50명',
       '클래스 최대 15개 운영',
       '자동 데이터 백업 지원',
       '기능 업데이트 자동 적용',
@@ -55,7 +57,7 @@ const PLANS = [
   },
   {
     id: 'school',
-    number: '③',
+    number: 'S',
     name: 'School 플랜',
     price: 13900,
     priceDisplay: '1인당 월 13,900원',
@@ -69,6 +71,7 @@ const PLANS = [
       '학급 전체 생기부 일괄 작성',
       '일괄 작성 엑셀 다운로드',
       '음성 기록 지원',
+      '클래스당 최대 50명',
       '클래스 최대 15개 운영',
       '자동 데이터 백업 지원',
       '기능 업데이트 자동 적용',
@@ -210,7 +213,7 @@ const PricingPage: React.FC = () => {
       </div>
 
       {/* 플랜 카드 3개 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {PLANS.map(plan => {
           const c = COLOR[plan.color];
           const isCurrent = isCurrentPlan(plan.id);
@@ -221,7 +224,7 @@ const PricingPage: React.FC = () => {
               key={plan.id}
               className={`relative flex flex-col bg-white rounded-2xl border-2 shadow-sm overflow-hidden transition-all
                 ${isCurrent ? c.border : 'border-slate-100'}
-                ${'recommended' in plan && plan.recommended ? 'md:-mt-3 md:shadow-xl' : ''}
+                ${'recommended' in plan && plan.recommended ? 'lg:-mt-3 lg:shadow-xl' : ''}
               `}
             >
               {'recommended' in plan && plan.recommended && (
@@ -230,16 +233,20 @@ const PricingPage: React.FC = () => {
 
               {/* 카드 헤더 */}
               <div className={`${c.header} px-5 pt-6 pb-5`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className={`w-7 h-7 rounded-full ${c.dot} text-white text-[13px] font-black flex items-center justify-center shrink-0`}>
+                <div className="flex items-center">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-[22px] font-black text-slate-800 leading-tight">{plan.name}</h3>
+                      {'recommended' in plan && plan.recommended && (
+                        <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/70 ${c.check}`}>추천</span>
+                      )}
+                    </div>
+                    <p className={`text-[17px] font-black ${c.price}`}>{plan.priceDisplay}</p>
+                  </div>
+                  <span className={`w-9 h-9 rounded-full ${c.dot} text-white text-[15px] font-black flex items-center justify-center shrink-0 mr-2`}>
                     {plan.number}
                   </span>
-                  {'recommended' in plan && plan.recommended && (
-                    <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/70 ${c.check}`}>추천</span>
-                  )}
                 </div>
-                <h3 className="text-[22px] font-black text-slate-800 leading-tight">{plan.name}</h3>
-                <p className={`text-[17px] font-black mt-1.5 ${c.price}`}>{plan.priceDisplay}</p>
               </div>
 
               {/* 기능 목록 */}
@@ -294,7 +301,7 @@ const PricingPage: React.FC = () => {
           <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-500 text-[13px] font-black flex items-center justify-center">F</div>
           <div>
             <span className="font-black text-slate-600 text-sm">Free 플랜</span>
-            <span className="text-[12px] text-slate-400 ml-2">가입 시 크레딧 10개 지급</span>
+            <span className="text-[12px] text-slate-400 ml-2">가입 시 크레딧 10개 지급 · 클래스 1개, 클래스당 최대 3명</span>
           </div>
         </div>
         {(subscription?.plan === 'free' || !subscription?.plan) && (
