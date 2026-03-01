@@ -47,6 +47,11 @@ const PLANS = [
       '자동 데이터 백업 지원',
       '기능 업데이트 자동 적용',
     ],
+    highlightFeatures: [
+      '클래스 최대 15개 운영',
+      '자동 데이터 백업 지원',
+      '기능 업데이트 자동 적용',
+    ] as readonly string[],
   },
   {
     id: 'school',
@@ -72,13 +77,19 @@ const PLANS = [
       '30명 이상 사용 시 신청 가능',
       '50명 이상 도입 시 단가 협의',
     ],
+    highlightFeatures: [
+      '학교 단위 통합 데이터 백업',
+      '관리자 전용 대시보드 지원',
+      '30명 이상 사용 시 신청 가능',
+      '50명 이상 도입 시 단가 협의',
+    ] as readonly string[],
   },
 ] as const;
 
 const COLOR = {
-  amber:   { header: 'bg-amber-50',   dot: 'bg-amber-400',   check: 'text-amber-500',   btn: 'bg-amber-500 hover:bg-amber-600',   border: 'border-amber-200',   price: 'text-amber-600'   },
-  blue:    { header: 'bg-blue-50',    dot: 'bg-blue-500',    check: 'text-blue-500',    btn: 'bg-blue-600 hover:bg-blue-700',    border: 'border-blue-200',    price: 'text-blue-700'    },
-  emerald: { header: 'bg-emerald-50', dot: 'bg-emerald-500', check: 'text-emerald-500', btn: 'bg-emerald-600 hover:bg-emerald-700', border: 'border-emerald-200', price: 'text-emerald-700' },
+  amber:   { header: 'bg-amber-50',   dot: 'bg-amber-400',   check: 'text-amber-500',   btn: 'bg-amber-500 hover:bg-amber-600',   border: 'border-amber-200',   price: 'text-amber-600',   highlight: 'text-amber-700 font-bold'   },
+  blue:    { header: 'bg-blue-50',    dot: 'bg-blue-500',    check: 'text-blue-500',    btn: 'bg-blue-600 hover:bg-blue-700',    border: 'border-blue-200',    price: 'text-blue-700',    highlight: 'text-blue-700 font-bold'    },
+  emerald: { header: 'bg-emerald-50', dot: 'bg-emerald-500', check: 'text-emerald-500', btn: 'bg-emerald-600 hover:bg-emerald-700', border: 'border-emerald-200', price: 'text-emerald-700', highlight: 'text-emerald-700 font-bold' },
 };
 
 const PricingPage: React.FC = () => {
@@ -234,12 +245,15 @@ const PricingPage: React.FC = () => {
               {/* 기능 목록 */}
               <div className="px-5 py-5 flex-1">
                 <ul className="space-y-2.5">
-                  {(plan.features as readonly string[]).map(f => (
-                    <li key={f} className="flex items-start gap-2 text-[13px] text-slate-600 font-medium leading-snug">
-                      <CheckCircle size={14} className={`${c.check} shrink-0 mt-0.5`} />
-                      {f}
-                    </li>
-                  ))}
+                  {(plan.features as readonly string[]).map(f => {
+                    const isHighlight = 'highlightFeatures' in plan && (plan.highlightFeatures as readonly string[]).includes(f);
+                    return (
+                      <li key={f} className={`flex items-start gap-2 text-[13px] leading-snug ${isHighlight ? c.highlight : 'text-slate-600 font-medium'}`}>
+                        <CheckCircle size={14} className={`${c.check} shrink-0 mt-0.5`} />
+                        {f}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
 
