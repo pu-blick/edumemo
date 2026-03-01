@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
-import { LogOut, LayoutDashboard, ShieldCheck, Wifi, WifiOff, Settings, CreditCard } from 'lucide-react';
+import { LogOut, LayoutDashboard, ShieldCheck, Wifi, WifiOff, Settings, CreditCard, Grid3X3 } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { supabase } from './lib/supabase';
 import { ToastContext, useToastState } from './hooks/useToast';
 import { ConfirmContext, useConfirmState, useConfirm } from './hooks/useConfirm';
 import Toast from './components/Toast';
@@ -19,6 +20,7 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentFailPage from './pages/PaymentFailPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
+import SeatingPage from './pages/SeatingPage';
 
 const ADMIN_EMAIL = 'admin@edumemo.com';
 
@@ -51,6 +53,48 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
+// ── Pro 구독 전용 라우트 wrapper ──────────────────────────────
+const ProRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading } = useAuth();
+  const [plan, setPlan] = useState<string | null>(null);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    if (!user) { setChecking(false); return; }
+    supabase
+      .from('subscriptions')
+      .select('plan')
+      .eq('user_id', user.id)
+      .single()
+      .then(({ data }) => {
+        setPlan(data?.plan || 'free');
+        setChecking(false);
+      });
+  }, [user]);
+
+  if (loading || checking) return null;
+  if (!user) return <Navigate to="/login" replace />;
+
+  if (plan === 'free' || !plan) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 sm:p-12 max-w-md text-center">
+          <Grid3X3 className="w-16 h-16 text-indigo-400 mx-auto mb-6" />
+          <h2 className="text-2xl font-black text-slate-800 mb-3">Pro 플랜 전용 기능</h2>
+          <p className="text-sm text-slate-500 mb-6 leading-relaxed">
+            자리배치 도우미는 Pro, Plus, School 플랜 구독 시 이용할 수 있습니다.
+          </p>
+          <Link to="/pricing" className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-md">
+            <CreditCard size={16} /> 구독 플랜 보기
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+};
+
 // ── 네비게이션 바 ────────────────────────────────────────────
 const Navbar: React.FC<{ isOnline: boolean }> = ({ isOnline }) => {
   const { user, signOut } = useAuth();
@@ -75,6 +119,10 @@ const Navbar: React.FC<{ isOnline: boolean }> = ({ isOnline }) => {
           <div className="flex items-center gap-2 md:gap-4">
             <Link to="/" className="hidden md:flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
               <LayoutDashboard size={16} /> Dashboard
+            </Link>
+
+            <Link to="/seating" className="hidden md:flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors bg-indigo-50 px-2.5 py-1 rounded-lg">
+              <Grid3X3 size={15} /> 자리배치
             </Link>
 
             <Link to="/pricing" className="flex items-center gap-1.5 text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 transition-colors px-3 py-1.5 rounded-lg shadow-sm">
@@ -182,6 +230,7 @@ const AppContent: React.FC = () => {
             <Route path="/student/:studentId"     element={<PrivateRoute><StudentDetail /></PrivateRoute>} />
             <Route path="/batch"                  element={<PrivateRoute><BatchGenerator /></PrivateRoute>} />
             <Route path="/pricing"                element={<PrivateRoute><PricingPage /></PrivateRoute>} />
+            <Route path="/seating"                element={<PrivateRoute><ProRoute><SeatingPage /></ProRoute></PrivateRoute>} />
 
             {/* 관리자 전용 */}
             <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />

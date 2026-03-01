@@ -62,6 +62,43 @@
         ::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.1); border-radius: 10px; }
 
         h1, h2, h3 { font-weight: 800; letter-spacing: -0.04em; }
+
+        /* 자리배치 전용 스타일 */
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+        }
+        .reveal-anim {
+            animation: reveal-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes reveal-pop {
+            from { transform: translateY(15px) scale(0.85); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .capture-mode {
+            background: #f8f5f2 !important;
+            width: 1400px !important;
+            height: auto !important;
+            min-height: 1000px !important;
+            padding: 100px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 0 !important;
+        }
+        .capture-mode .no-print { display: none !important; }
+        .capture-mode .excluded-seat {
+            opacity: 0 !important; border: none !important;
+            background: transparent !important; box-shadow: none !important;
+        }
+        .capture-mode [class*="aspect-"] { aspect-ratio: 4/3 !important; }
+        .capture-mode .capture-text-id { font-size: 20px !important; line-height: 1.2 !important; }
+        .capture-mode .capture-text-name { font-size: 26px !important; line-height: 1.2 !important; }
+        .capture-mode .capture-seat-content > * { margin-top: 0 !important; }
+        .capture-mode .capture-seat-content { overflow: visible !important; }
     </style>
     
     <script type="importmap">
@@ -74,7 +111,8 @@
         "firebase/": "https://esm.sh/firebase@^12.9.0/",
         "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
         "@google/genai": "https://esm.sh/@google/genai@^1.40.0",
-        "xlsx": "https://esm.sh/xlsx@^0.18.5"
+        "xlsx": "https://esm.sh/xlsx@^0.18.5",
+        "html-to-image": "https://esm.sh/html-to-image@1.11.11"
       }
     }
     </script>
