@@ -8,9 +8,7 @@ interface RouletteProps {
   students: SeatingStudent[];
 }
 
-const ITEM_HEIGHT = 88;
 const VISIBLE_COUNT = 5;
-const DRUM_HEIGHT = ITEM_HEIGHT * VISIBLE_COUNT;
 const REPEAT_COUNT = 7;
 const SPIN_DURATION = 5000;
 const BETWEEN_SPIN_PAUSE = 1300;
@@ -33,11 +31,21 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
   const [newItemText, setNewItemText] = useState("");
   const [isSpinning, setIsSpinning] = useState(false);
   const [winners, setWinners] = useState<RouletteItem[]>([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const drumRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<RouletteItem[]>([]);
   const runSpinCycleRef = useRef<(spinIdx: number, allWinners: RouletteItem[]) => void>(null!);
+
+  const itemH = isMobile ? 64 : 88;
+  const drumH = itemH * VISIBLE_COUNT;
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   useEffect(() => { itemsRef.current = items; }, [items]);
 
@@ -98,7 +106,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
     const targetBlock = REPEAT_COUNT - 2;
     const winnerPosInExtended = targetBlock * currentItems.length + winnerOrigIdx;
     const centerOffset = Math.floor(VISIBLE_COUNT / 2);
-    const targetY = -((winnerPosInExtended - centerOffset) * ITEM_HEIGHT);
+    const targetY = -((winnerPosInExtended - centerOffset) * itemH);
 
     if (drumRef.current) {
       drumRef.current.style.transition = 'none';
@@ -149,34 +157,34 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-6 font-sans overflow-hidden">
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative w-full max-w-6xl bg-white rounded-2xl p-6 sm:p-10 shadow-2xl flex flex-col lg:flex-row gap-8 lg:gap-12 animate-in fade-in zoom-in duration-300 max-h-[95vh] overflow-y-auto lg:overflow-hidden border border-slate-200">
-        <button onClick={onClose} className="absolute top-4 right-6 p-2 hover:bg-slate-100 rounded-full transition-all z-50">
-          <X className="w-8 h-8 text-slate-400" />
+      <div className="relative w-full max-w-6xl bg-white rounded-2xl p-4 sm:p-10 shadow-2xl flex flex-col lg:flex-row gap-4 sm:gap-8 lg:gap-12 animate-in fade-in zoom-in duration-300 max-h-[95vh] overflow-y-auto lg:overflow-hidden border border-slate-200">
+        <button onClick={onClose} className="absolute top-3 right-3 sm:top-4 sm:right-6 p-1.5 sm:p-2 hover:bg-slate-100 rounded-full transition-all z-50">
+          <X className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
         </button>
 
-        <div className="flex-[1.2] flex flex-col items-center justify-center space-y-6 sm:space-y-8">
+        <div className="flex-[1.2] flex flex-col items-center justify-center space-y-4 sm:space-y-8">
           <div className="text-center">
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight mb-2"
+            <h2 className="text-2xl sm:text-5xl font-black tracking-tight mb-1 sm:mb-2"
               style={{ background: 'linear-gradient(135deg, #1a4d2e, #2d7a4f)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               행운의 룰렛
             </h2>
           </div>
 
-          <div className="w-[280px] sm:w-[360px] lg:w-[420px]">
+          <div className="w-[240px] sm:w-[360px] lg:w-[420px]">
             <div className="relative">
-              <div className="absolute -left-5 z-20 text-amber-400 text-3xl leading-none pointer-events-none"
-                style={{ top: `${Math.floor(VISIBLE_COUNT / 2) * ITEM_HEIGHT + ITEM_HEIGHT / 2}px`, transform: 'translateY(-50%)' }}>▶</div>
-              <div className="absolute -right-5 z-20 text-amber-400 text-3xl leading-none pointer-events-none"
-                style={{ top: `${Math.floor(VISIBLE_COUNT / 2) * ITEM_HEIGHT + ITEM_HEIGHT / 2}px`, transform: 'translateY(-50%)' }}>◀</div>
+              <div className="absolute -left-4 sm:-left-5 z-20 text-amber-400 text-2xl sm:text-3xl leading-none pointer-events-none"
+                style={{ top: `${Math.floor(VISIBLE_COUNT / 2) * itemH + itemH / 2}px`, transform: 'translateY(-50%)' }}>▶</div>
+              <div className="absolute -right-4 sm:-right-5 z-20 text-amber-400 text-2xl sm:text-3xl leading-none pointer-events-none"
+                style={{ top: `${Math.floor(VISIBLE_COUNT / 2) * itemH + itemH / 2}px`, transform: 'translateY(-50%)' }}>◀</div>
 
               <div className="relative overflow-hidden rounded-2xl shadow-2xl"
-                style={{ height: `${DRUM_HEIGHT}px`, border: '2.5px solid rgba(26,77,46,0.18)', boxShadow: '0 8px 32px -4px rgba(26,77,46,0.15), 0 2px 8px rgba(0,0,0,0.06)' }}>
+                style={{ height: `${drumH}px`, border: '2.5px solid rgba(26,77,46,0.18)', boxShadow: '0 8px 32px -4px rgba(26,77,46,0.15), 0 2px 8px rgba(0,0,0,0.06)' }}>
                 <div className="absolute inset-x-0 pointer-events-none z-10"
-                  style={{ top: `${Math.floor(VISIBLE_COUNT / 2) * ITEM_HEIGHT}px`, height: `${ITEM_HEIGHT}px`, backgroundColor: 'rgba(251,191,36,0.13)', borderTop: '2px solid rgba(245,158,11,0.5)', borderBottom: '2px solid rgba(245,158,11,0.5)' }} />
+                  style={{ top: `${Math.floor(VISIBLE_COUNT / 2) * itemH}px`, height: `${itemH}px`, backgroundColor: 'rgba(251,191,36,0.13)', borderTop: '2px solid rgba(245,158,11,0.5)', borderBottom: '2px solid rgba(245,158,11,0.5)' }} />
                 <div className="absolute top-0 inset-x-0 pointer-events-none z-10"
-                  style={{ height: `${ITEM_HEIGHT * 1.2}px`, background: 'linear-gradient(to bottom, rgba(255,255,255,0.92), transparent)' }} />
+                  style={{ height: `${itemH * 1.2}px`, background: 'linear-gradient(to bottom, rgba(255,255,255,0.92), transparent)' }} />
                 <div className="absolute bottom-0 inset-x-0 pointer-events-none z-10"
-                  style={{ height: `${ITEM_HEIGHT * 1.2}px`, background: 'linear-gradient(to top, rgba(255,255,255,0.92), transparent)' }} />
+                  style={{ height: `${itemH * 1.2}px`, background: 'linear-gradient(to top, rgba(255,255,255,0.92), transparent)' }} />
 
                 <div ref={drumRef} className="absolute top-0 inset-x-0" style={{ willChange: 'transform' }}>
                   {extendedItems.length > 0 ? (
@@ -184,28 +192,28 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
                       const originalIdx = idx % Math.max(items.length, 1);
                       const color = SLOT_COLORS[originalIdx % SLOT_COLORS.length];
                       return (
-                        <div key={`${item.id}-${idx}`} className="flex items-center justify-center select-none px-6"
-                          style={{ height: `${ITEM_HEIGHT}px`, backgroundColor: color.bg }}>
-                          <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-center leading-tight truncate w-full"
+                        <div key={`${item.id}-${idx}`} className="flex items-center justify-center select-none px-4 sm:px-6"
+                          style={{ height: `${itemH}px`, backgroundColor: color.bg }}>
+                          <span className="text-lg sm:text-3xl lg:text-4xl font-black text-center leading-tight truncate w-full"
                             style={{ color: color.text }}>{item.text}</span>
                         </div>
                       );
                     })
                   ) : (
-                    <div className="flex items-center justify-center text-slate-300 text-lg font-bold bg-white"
-                      style={{ height: `${DRUM_HEIGHT}px` }}>항목을 추가해주세요</div>
+                    <div className="flex items-center justify-center text-slate-300 text-sm sm:text-lg font-bold bg-white"
+                      style={{ height: `${drumH}px` }}>항목을 추가해주세요</div>
                   )}
                 </div>
               </div>
             </div>
 
             {winners.length > 0 && isSpinning && (
-              <div className="mt-5 flex flex-wrap gap-2 justify-center">
+              <div className="mt-3 sm:mt-5 flex flex-wrap gap-1.5 sm:gap-2 justify-center">
                 {winners.map((w, i) => {
                   const originalIdx = items.findIndex(it => it.id === w.id);
                   const color = SLOT_COLORS[(originalIdx >= 0 ? originalIdx : i) % SLOT_COLORS.length];
                   return (
-                    <span key={w.id} className="px-4 py-2 rounded-lg font-black text-lg shadow border"
+                    <span key={w.id} className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-black text-sm sm:text-lg shadow border"
                       style={{ backgroundColor: color.bg, color: color.text, borderColor: color.text + '44' }}>{w.text}</span>
                   );
                 })}
@@ -214,79 +222,79 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
           </div>
 
           {isSpinning && (
-            <p className="text-slate-500 font-bold text-lg animate-pulse">
+            <p className="text-slate-500 font-bold text-sm sm:text-lg animate-pulse">
               {winners.length + 1} / {winnerCount}번째 추첨 중...
             </p>
           )}
 
           <button onClick={startSpin} disabled={isSpinning || items.length < 1}
-            className="w-full max-w-[340px] py-4 sm:py-5 text-white rounded-xl shadow-lg transition-all font-black text-xl sm:text-2xl tracking-widest disabled:opacity-30 active:scale-95 flex items-center justify-center uppercase"
+            className="w-full max-w-[280px] sm:max-w-[340px] py-3 sm:py-5 text-white rounded-xl shadow-lg transition-all font-black text-base sm:text-2xl tracking-widest disabled:opacity-30 active:scale-95 flex items-center justify-center uppercase"
             style={{ background: isSpinning ? '#1a4d2e' : 'linear-gradient(135deg, #1a4d2e 0%, #2d7a4f 100%)', boxShadow: '0 4px 20px rgba(26,77,46,0.35)' }}>
-            {isSpinning ? <RefreshCw className="w-7 h-7 animate-spin" /> : <><Play className="w-7 h-7 mr-3 fill-white" /> START</>}
+            {isSpinning ? <RefreshCw className="w-5 h-5 sm:w-7 sm:h-7 animate-spin" /> : <><Play className="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3 fill-white" /> START</>}
           </button>
         </div>
 
-        <div className="flex-1 flex flex-col space-y-6 lg:shrink-0 lg:max-w-md">
-          <div className="space-y-5">
-            <div className="space-y-2.5">
-              <div className="flex items-center space-x-3 text-slate-500"><Type className="w-5 h-5" /><span className="text-[18px] font-medium tracking-tight">주제</span></div>
+        <div className="flex-1 flex flex-col space-y-3 sm:space-y-6 lg:shrink-0 lg:max-w-md">
+          <div className="space-y-3 sm:space-y-5">
+            <div className="space-y-1.5 sm:space-y-2.5">
+              <div className="flex items-center space-x-2 sm:space-x-3 text-slate-500"><Type className="w-4 h-4 sm:w-5 sm:h-5" /><span className="text-[15px] sm:text-[18px] font-medium tracking-tight">주제</span></div>
               <input type="text" value={subject} onChange={e => setSubject(e.target.value)} disabled={isSpinning}
-                className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-lg text-[18px] font-bold shadow-sm focus:ring-2 focus:ring-[#1a4d2e]/10 focus:border-[#1a4d2e] outline-none transition-all placeholder:text-slate-300 disabled:opacity-50" />
+                className="w-full px-3 sm:px-5 py-2.5 sm:py-3.5 bg-slate-50 border border-slate-200 rounded-lg text-[15px] sm:text-[18px] font-bold shadow-sm focus:ring-2 focus:ring-[#1a4d2e]/10 focus:border-[#1a4d2e] outline-none transition-all placeholder:text-slate-300 disabled:opacity-50" />
             </div>
-            <div className="space-y-2.5">
-              <div className="flex items-center space-x-3 text-slate-500"><Users className="w-5 h-5" /><span className="text-[18px] font-medium tracking-tight">당첨 인원</span></div>
+            <div className="space-y-1.5 sm:space-y-2.5">
+              <div className="flex items-center space-x-2 sm:space-x-3 text-slate-500"><Users className="w-4 h-4 sm:w-5 sm:h-5" /><span className="text-[15px] sm:text-[18px] font-medium tracking-tight">당첨 인원</span></div>
               <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg shadow-sm overflow-hidden">
                 <button onClick={() => setWinnerCount(Math.max(1, winnerCount - 1))} disabled={isSpinning}
-                  className="px-6 py-3.5 hover:bg-slate-100 text-slate-500 transition-colors border-r border-slate-200 active:bg-slate-200 disabled:opacity-50"><Minus className="w-6 h-6" /></button>
+                  className="px-4 sm:px-6 py-2.5 sm:py-3.5 hover:bg-slate-100 text-slate-500 transition-colors border-r border-slate-200 active:bg-slate-200 disabled:opacity-50"><Minus className="w-5 h-5 sm:w-6 sm:h-6" /></button>
                 <input type="number" min="1" max={items.length || 1} value={winnerCount} readOnly
-                  className="flex-1 text-center bg-transparent text-[18px] font-bold outline-none appearance-none cursor-default py-3.5"
+                  className="flex-1 text-center bg-transparent text-[15px] sm:text-[18px] font-bold outline-none appearance-none cursor-default py-2.5 sm:py-3.5"
                   style={{ MozAppearance: 'textfield' } as React.CSSProperties} />
                 <button onClick={() => setWinnerCount(Math.min(items.length || 1, winnerCount + 1))} disabled={isSpinning}
-                  className="px-6 py-3.5 hover:bg-slate-100 text-slate-500 transition-colors border-l border-slate-200 active:bg-slate-200 disabled:opacity-50"><Plus className="w-6 h-6" /></button>
+                  className="px-4 sm:px-6 py-2.5 sm:py-3.5 hover:bg-slate-100 text-slate-500 transition-colors border-l border-slate-200 active:bg-slate-200 disabled:opacity-50"><Plus className="w-5 h-5 sm:w-6 sm:h-6" /></button>
               </div>
             </div>
-            <div className="space-y-2.5">
-              <div className="flex items-center space-x-3 text-slate-500"><Plus className="w-5 h-5" /><span className="text-[18px] font-medium tracking-tight">직접 추가</span></div>
+            <div className="space-y-1.5 sm:space-y-2.5">
+              <div className="flex items-center space-x-2 sm:space-x-3 text-slate-500"><Plus className="w-4 h-4 sm:w-5 sm:h-5" /><span className="text-[15px] sm:text-[18px] font-medium tracking-tight">직접 추가</span></div>
               <div className="flex gap-2">
                 <input type="text" value={newItemText} onChange={e => setNewItemText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAddItem()} disabled={isSpinning}
-                  placeholder="항목명" className="flex-1 px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-lg text-[18px] font-bold shadow-sm outline-none placeholder:text-slate-300 disabled:opacity-50" />
+                  placeholder="항목명" className="flex-1 min-w-0 px-3 sm:px-5 py-2.5 sm:py-3.5 bg-slate-50 border border-slate-200 rounded-lg text-[15px] sm:text-[18px] font-bold shadow-sm outline-none placeholder:text-slate-300 disabled:opacity-50" />
                 <button onClick={handleAddItem} disabled={isSpinning}
-                  className="px-6 bg-[#1a4d2e] text-white rounded-lg font-black text-[16px] hover:bg-[#143a23] transition-all flex items-center justify-center shadow-md active:scale-95 group disabled:opacity-50">
-                  <Plus className="w-4 h-4 mr-1 group-hover:rotate-90 transition-transform" /> 추가
+                  className="px-3 sm:px-6 bg-[#1a4d2e] text-white rounded-lg font-black text-[14px] sm:text-[16px] hover:bg-[#143a23] transition-all flex items-center justify-center shadow-md active:scale-95 group disabled:opacity-50 shrink-0 whitespace-nowrap">
+                  <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 group-hover:rotate-90 transition-transform" /> 추가
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <button onClick={downloadRouletteTemplate} disabled={isSpinning}
-              className="flex items-center justify-center py-3.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
-              <Download className="w-5 h-5 mr-2 text-[#1a4d2e]" /> 양식 받기
+              className="flex items-center justify-center py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-[14px] sm:text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
+              <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-[#1a4d2e]" /> 양식 받기
             </button>
             <button onClick={() => fileInputRef.current?.click()} disabled={isSpinning}
-              className="flex items-center justify-center py-3.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
-              <FileUp className="w-5 h-5 mr-2 text-[#1a4d2e]" /> 파일 업로드
+              className="flex items-center justify-center py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-[14px] sm:text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
+              <FileUp className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-[#1a4d2e]" /> 파일 업로드
             </button>
             <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".xlsx,.xls" />
           </div>
 
-          <div className="flex-1 overflow-hidden flex flex-col bg-slate-50 border border-slate-200 rounded-xl min-h-[200px]">
-            <div className="px-5 py-3 bg-white border-b border-slate-200 flex justify-between items-center shrink-0">
-              <h4 className="text-[18px] font-medium text-slate-500">참여 항목 ({items.length})</h4>
-              <button onClick={() => setItems([])} disabled={isSpinning} className="text-[13px] font-bold text-rose-500 hover:text-rose-700 transition-colors disabled:opacity-50">전체 삭제</button>
+          <div className="flex-1 overflow-hidden flex flex-col bg-slate-50 border border-slate-200 rounded-xl min-h-[160px] sm:min-h-[200px]">
+            <div className="px-3 sm:px-5 py-2 sm:py-3 bg-white border-b border-slate-200 flex justify-between items-center shrink-0">
+              <h4 className="text-[15px] sm:text-[18px] font-medium text-slate-500">참여 항목 ({items.length})</h4>
+              <button onClick={() => setItems([])} disabled={isSpinning} className="text-[12px] sm:text-[13px] font-bold text-rose-500 hover:text-rose-700 transition-colors disabled:opacity-50">전체 삭제</button>
             </div>
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            <div className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-1.5 sm:space-y-2">
               {items.map((item, idx) => (
-                <div key={item.id} className="bg-white px-4 py-3 rounded-lg text-[15px] font-bold text-slate-700 flex justify-between items-center group shadow-sm hover:shadow-md transition-all">
+                <div key={item.id} className="bg-white px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-[13px] sm:text-[15px] font-bold text-slate-700 flex justify-between items-center group shadow-sm hover:shadow-md transition-all">
                   <span className="truncate pr-2">{item.text}</span>
                   <button onClick={() => setItems(items.filter((_, i) => i !== idx))} disabled={isSpinning}
                     className="text-slate-300 hover:text-rose-500 transition-all hover:scale-110 disabled:opacity-0"><X className="w-4 h-4" /></button>
                 </div>
               ))}
               {items.length === 0 && (
-                <div className="h-full flex flex-col items-center justify-center text-slate-300 py-10">
-                  <Users className="w-10 h-10 mb-2 opacity-20" />
-                  <p className="text-sm font-bold opacity-40">항목을 추가해주세요</p>
+                <div className="h-full flex flex-col items-center justify-center text-slate-300 py-8 sm:py-10">
+                  <Users className="w-8 h-8 sm:w-10 sm:h-10 mb-2 opacity-20" />
+                  <p className="text-xs sm:text-sm font-bold opacity-40">항목을 추가해주세요</p>
                 </div>
               )}
             </div>
@@ -294,14 +302,14 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
         </div>
 
         {winners.length > 0 && !isSpinning && (
-          <div className="absolute inset-0 z-[110] flex flex-col items-center justify-center bg-[#0a2617]/95 backdrop-blur-lg animate-in fade-in duration-500 p-8 sm:p-12 text-center">
-            <Award className="w-20 h-20 sm:w-28 sm:h-28 text-yellow-400 mb-6 sm:mb-8 animate-bounce" />
-            <div className="flex flex-col items-center space-y-6 mb-10 sm:mb-14 w-full max-w-4xl overflow-hidden">
-              <span className="text-2xl sm:text-4xl font-bold text-white/90 tracking-tight">{subject}</span>
-              <div className="flex flex-wrap justify-center gap-4 sm:gap-6 py-4 max-h-[45vh] overflow-y-auto w-full px-4">
+          <div className="absolute inset-0 z-[110] flex flex-col items-center justify-center bg-[#0a2617]/95 backdrop-blur-lg animate-in fade-in duration-500 p-6 sm:p-12 text-center">
+            <Award className="w-16 h-16 sm:w-28 sm:h-28 text-yellow-400 mb-4 sm:mb-8 animate-bounce" />
+            <div className="flex flex-col items-center space-y-4 sm:space-y-6 mb-8 sm:mb-14 w-full max-w-4xl overflow-hidden">
+              <span className="text-xl sm:text-4xl font-bold text-white/90 tracking-tight">{subject}</span>
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-6 py-3 sm:py-4 max-h-[45vh] overflow-y-auto w-full px-4">
                 {winners.map((win, idx) => (
                   <div key={win.id} className="animate-in zoom-in slide-in-from-bottom-8 duration-500" style={{ animationDelay: `${idx * 150}ms` }}>
-                    <h3 className={`${winners.length > 4 ? 'text-xl sm:text-3xl' : winners.length > 1 ? 'text-2xl sm:text-5xl' : 'text-4xl sm:text-7xl'} font-black text-[#1a4d2e] tracking-tighter px-8 sm:px-14 py-4 sm:py-7 bg-white rounded-xl shadow-2xl border-b-4 border-slate-200`}>
+                    <h3 className={`${winners.length > 4 ? 'text-lg sm:text-3xl' : winners.length > 1 ? 'text-xl sm:text-5xl' : 'text-3xl sm:text-7xl'} font-black text-[#1a4d2e] tracking-tighter px-6 sm:px-14 py-3 sm:py-7 bg-white rounded-xl shadow-2xl border-b-4 border-slate-200`}>
                       {win.text}
                     </h3>
                   </div>
@@ -309,7 +317,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
               </div>
             </div>
             <button onClick={() => setWinners([])}
-              className="px-20 sm:px-32 py-4 sm:py-6 bg-white text-[#1a4d2e] rounded-xl font-black text-xl sm:text-3xl hover:bg-slate-100 transition-all active:scale-95 shadow-xl border-b-4 border-slate-200">확인</button>
+              className="px-14 sm:px-32 py-3 sm:py-6 bg-white text-[#1a4d2e] rounded-xl font-black text-lg sm:text-3xl hover:bg-slate-100 transition-all active:scale-95 shadow-xl border-b-4 border-slate-200">확인</button>
           </div>
         )}
       </div>
