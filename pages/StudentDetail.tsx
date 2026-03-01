@@ -6,9 +6,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { Student, Observation } from '../types';
 import {
   ArrowLeft, Plus, Trash2, Zap, Copy, Edit2, Check, X,
-  History, User as UserIcon, Loader2, Mic, MicOff, FileDown, CheckSquare, Square
+  History, User as UserIcon, Loader2, Mic, MicOff, FileDown, CheckSquare, Square, Key
 } from 'lucide-react';
 import { generateStudentDraft } from '../services/geminiService';
+import { checkCredit, deductCredit } from '../services/creditService';
+import { getUserApiKey, setUserApiKey, removeUserApiKey } from '../lib/byokStorage';
 import * as XLSX from 'xlsx';
 import { useToast } from '../hooks/useToast';
 
@@ -29,6 +31,8 @@ const StudentDetail: React.FC = () => {
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [editName, setEditName] = useState('');
   const [editNumber, setEditNumber] = useState('');
+  const [useByok, setUseByok] = useState(() => !!getUserApiKey());
+  const [byokKey, setByokKey] = useState(() => getUserApiKey() || '');
 
   const sessionRef = useRef<any>(null);
   const liveTranscriptionRef = useRef('');
@@ -89,14 +93,43 @@ const StudentDetail: React.FC = () => {
     await supabase.from('observations').delete().eq('id', id);
   };
 
+  const handleByokToggle = (enabled: boolean) => {
+    setUseByok(enabled);
+    if (!enabled) { removeUserApiKey(); setByokKey(''); }
+  };
+
+  const handleByokSave = (key: string) => {
+    setByokKey(key);
+    if (key.trim()) setUserApiKey(key);
+    else removeUserApiKey();
+  };
+
   const handleGenerateAI = async () => {
     const targetObs = observations.filter(o => selectedObsIds.has(o.id)).map(o => o.content);
     if (!student || targetObs.length === 0) { showToast('기록을 선택해 주세요.', 'warning'); return; }
+
+    const userKey = useByok && byokKey.trim() ? byokKey.trim() : undefined;
+
+    // BYOK 키 없으면 크레딧 확인
+    if (!userKey) {
+      const credit = await checkCredit();
+      if (credit < 1) {
+        showToast('크레딧이 부족합니다. 구독 플랜을 확인해 주세요.', 'error');
+        return;
+      }
+    }
+
     setIsGenerating(true);
     setDraftResult('');
     try {
-      const res = await generateStudentDraft(student.name, student.student_number, targetObs, charLimit);
+      const res = await generateStudentDraft(student.name, student.student_number, targetObs, charLimit, undefined, userKey);
       setDraftResult(res);
+
+      // BYOK 키 없으면 크레딧 차감
+      if (!userKey) {
+        const result = await deductCredit();
+        if (!result.success) console.warn('[Credit] 차감 실패:', result.message);
+      }
     } catch (e: any) {
       showToast(e.message, 'error');
     } finally {
@@ -261,6 +294,33 @@ const StudentDetail: React.FC = () => {
       <div className="lg:col-span-4">
         <div className="glass rounded-custom p-6 sm:p-8 sticky top-24 border border-white shadow-xl bg-white/40">
           <h2 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-2"><Zap className="text-indigo-600 fill-indigo-600" size={20} /> AI 초안 생성</h2>
+
+          {/* BYOK API 키 설정 */}
+          <div className="mb-6 p-4 rounded-xl bg-slate-50 border border-slate-100">
+            <button
+              onClick={() => handleByokToggle(!useByok)}
+              className="flex items-center justify-between w-full text-left"
+            >
+              <span className="flex items-center gap-2 text-[12px] font-bold text-slate-500">
+                <Key size={14} /> 내 API 키 사용
+              </span>
+              {useByok
+                ? <span className="text-indigo-600 text-[11px] font-black">ON</span>
+                : <span className="text-slate-300 text-[11px] font-black">OFF</span>}
+            </button>
+            {useByok && (
+              <input
+                type="password"
+                className="mt-3 w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm font-medium focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/10"
+                placeholder="Gemini API 키 입력"
+                value={byokKey}
+                onChange={(e) => handleByokSave(e.target.value)}
+              />
+            )}
+            {useByok && byokKey.trim() && (
+              <p className="mt-2 text-[10px] text-emerald-600 font-bold">내 키 사용 중 (크레딧 차감 없음)</p>
+            )}
+          </div>
 
           <div className="mb-8">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1">희망 분량</label>

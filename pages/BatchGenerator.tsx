@@ -4,9 +4,11 @@ import { useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Classroom, Student, BatchResult } from '../types';
-import { Zap, CheckCircle2, AlertCircle, Loader2, Copy, Search, FileDown, ArrowLeft, RefreshCw, CheckSquare, Square, Users } from 'lucide-react';
+import { Zap, CheckCircle2, AlertCircle, Loader2, Copy, Search, FileDown, ArrowLeft, RefreshCw, CheckSquare, Square, Users, Key } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { generateStudentDraft } from '../services/geminiService';
+import { checkCredit, deductCredit } from '../services/creditService';
+import { getUserApiKey, setUserApiKey, removeUserApiKey } from '../lib/byokStorage';
 import * as XLSX from 'xlsx';
 import { useToast } from '../hooks/useToast';
 
@@ -26,6 +28,8 @@ const BatchGenerator: React.FC = () => {
   const [batchResults, setBatchResults] = useState<Record<string, BatchResult>>({});
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [studentSearch, setStudentSearch] = useState('');
+  const [useByok, setUseByok] = useState(() => !!getUserApiKey());
+  const [byokKey, setByokKey] = useState(() => getUserApiKey() || '');
 
   const fetchClassrooms = useCallback(async () => {
     if (!user) return;
@@ -50,9 +54,32 @@ const BatchGenerator: React.FC = () => {
       });
   }, [selectedClassroom]);
 
+  const handleByokToggle = (enabled: boolean) => {
+    setUseByok(enabled);
+    if (!enabled) { removeUserApiKey(); setByokKey(''); }
+  };
+
+  const handleByokSave = (key: string) => {
+    setByokKey(key);
+    if (key.trim()) setUserApiKey(key);
+    else removeUserApiKey();
+  };
+
   const startBatchProcess = async () => {
     const targetIds: string[] = Array.from(selectedStudentIds);
     if (targetIds.length === 0) { showToast('학생을 선택해 주세요.', 'warning'); return; }
+
+    const userKey = useByok && byokKey.trim() ? byokKey.trim() : undefined;
+
+    // BYOK 키 없으면 크레딧 사전 확인
+    if (!userKey) {
+      const credit = await checkCredit();
+      if (credit < targetIds.length) {
+        showToast(`크레딧이 부족합니다 (필요: ${targetIds.length}, 보유: ${credit})`, 'error');
+        return;
+      }
+    }
+
     setIsProcessing(true);
     setProgress({ current: 0, total: targetIds.length });
 
@@ -71,8 +98,14 @@ const BatchGenerator: React.FC = () => {
           .eq('student_id', sid);
         const texts = (obsData ?? []).map(o => o.content);
         if (texts.length === 0) throw new Error('관찰 기록 없음');
-        const res = await generateStudentDraft(student!.name, student!.student_number, texts, charLimit);
+        const res = await generateStudentDraft(student!.name, student!.student_number, texts, charLimit, undefined, userKey);
         setBatchResults(p => ({ ...p, [sid]: { studentId: sid, status: 'success', result: res } }));
+
+        // BYOK 키 없으면 크레딧 차감
+        if (!userKey) {
+          const result = await deductCredit();
+          if (!result.success) console.warn('[Credit] 차감 실패:', result.message);
+        }
       } catch (e: any) {
         setBatchResults(p => ({ ...p, [sid]: { studentId: sid, status: 'error', error: e.message } }));
       }
@@ -172,6 +205,33 @@ const BatchGenerator: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* BYOK API 키 설정 */}
+      <div className="mb-6 glass rounded-2xl p-6 border border-white shadow-md">
+        <button
+          onClick={() => handleByokToggle(!useByok)}
+          className="flex items-center justify-between w-full text-left"
+        >
+          <span className="flex items-center gap-2 text-[12px] font-bold text-slate-500">
+            <Key size={14} /> 내 API 키 사용
+          </span>
+          {useByok
+            ? <span className="text-indigo-600 text-[11px] font-black">ON</span>
+            : <span className="text-slate-300 text-[11px] font-black">OFF</span>}
+        </button>
+        {useByok && (
+          <input
+            type="password"
+            className="mt-3 w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm font-medium focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/10"
+            placeholder="Gemini API 키 입력"
+            value={byokKey}
+            onChange={(e) => handleByokSave(e.target.value)}
+          />
+        )}
+        {useByok && byokKey.trim() && (
+          <p className="mt-2 text-[10px] text-emerald-600 font-bold">내 키 사용 중 (크레딧 차감 없음)</p>
+        )}
+      </div>
 
       {/* 설정 및 실행 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

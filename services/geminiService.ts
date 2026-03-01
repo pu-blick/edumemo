@@ -8,13 +8,14 @@ export async function generateStudentDraft(
   studentNumber: string,
   observations: string[],
   charLimit: number,
-  extraContext?: string
+  extraContext?: string,
+  apiKey?: string
 ): Promise<string> {
   if (!observations || observations.length === 0) {
     throw new Error("선택된 관찰 기록이 없습니다.");
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: apiKey || process.env.API_KEY });
   
   const prompt = `
 대한민국 학교의 베테랑 교사로서 다음 학생의 관찰 기록을 바탕으로 생활기록부용 문장을 작성하세요.
@@ -58,7 +59,7 @@ ${extraContext ? `[추가 반영 요청 사항]\n${extraContext}\n` : ''}
   } catch (error: any) {
     console.error("Gemini API Error Detail:", error);
     if (error.message?.includes('API_KEY_INVALID')) {
-      throw new Error("API 키가 유효하지 않습니다.");
+      throw new Error(apiKey ? "입력하신 API 키가 유효하지 않습니다." : "서비스 API 키가 유효하지 않습니다.");
     }
     throw new Error(`AI 호출 실패: ${error.message || '네트워크 상태를 확인해주세요.'}`);
   }
