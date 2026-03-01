@@ -5,7 +5,7 @@ import { Logo } from '../App';
 import { useAuth } from '../contexts/AuthContext';
 
 const LoginPage: React.FC = () => {
-  const { signIn, signUp, signInWithGoogle } = useAuth();
+  const { signIn, signUp, signInWithGoogle, signInWithKakao } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +20,16 @@ const LoginPage: React.FC = () => {
       setError(err);
       setIsLoading(false);
     }
-    // 성공 시 Google 페이지로 리다이렉트되므로 isLoading 해제 불필요
+  };
+
+  const handleKakaoSignIn = async () => {
+    setError('');
+    setIsLoading(true);
+    const { error: err } = await signInWithKakao();
+    if (err) {
+      setError(err);
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,6 +140,19 @@ const LoginPage: React.FC = () => {
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
         </svg>
         Google로 시작하기
+      </button>
+
+      <button
+        type="button"
+        onClick={handleKakaoSignIn}
+        disabled={isLoading}
+        className="mt-3 w-full py-3.5 rounded-lg font-bold shadow-sm hover:brightness-95 transition-all disabled:opacity-40 flex items-center justify-center gap-3 text-sm active:scale-95 border-0"
+        style={{ backgroundColor: '#FEE500', color: '#191919' }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3C6.48 3 2 6.36 2 10.44c0 2.62 1.75 4.93 4.38 6.24l-1.12 4.16c-.1.36.32.65.64.44l4.84-3.2c.41.04.83.06 1.26.06 5.52 0 10-3.36 10-7.7S17.52 3 12 3z" fill="#191919"/>
+        </svg>
+        카카오로 시작하기
       </button>
 
       <div className="mt-6 text-center">
