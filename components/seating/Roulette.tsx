@@ -116,7 +116,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
     ctx.shadowColor = 'rgba(0,0,0,0.15)';
     ctx.shadowBlur = 16;
     ctx.shadowOffsetY = 4;
-    ctx.fillStyle = '#dc2626';
+    ctx.fillStyle = '#d97706';
     ctx.fill();
     ctx.restore();
 
@@ -125,7 +125,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
       ctx.arc(center, center, radius, 0, Math.PI * 2);
       ctx.fillStyle = '#f8f8f8';
       ctx.fill();
-      ctx.strokeStyle = '#dc2626';
+      ctx.strokeStyle = '#d97706';
       ctx.lineWidth = 5;
       ctx.stroke();
       ctx.fillStyle = '#94a3b8';
@@ -136,7 +136,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
       // center hub
       ctx.beginPath();
       ctx.arc(center, center, 14, 0, Math.PI * 2);
-      ctx.fillStyle = '#dc2626';
+      ctx.fillStyle = '#d97706';
       ctx.fill();
       ctx.beginPath();
       ctx.arc(center, center, 8, 0, Math.PI * 2);
@@ -188,7 +188,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
     // outer ring
     ctx.beginPath();
     ctx.arc(center, center, radius, 0, Math.PI * 2);
-    ctx.strokeStyle = '#dc2626';
+    ctx.strokeStyle = '#d97706';
     ctx.lineWidth = 5;
     ctx.stroke();
 
@@ -225,9 +225,9 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
     // center hub
     ctx.beginPath();
     ctx.arc(center, center, isMobile ? 16 : 22, 0, Math.PI * 2);
-    ctx.fillStyle = '#dc2626';
+    ctx.fillStyle = '#d97706';
     ctx.fill();
-    ctx.strokeStyle = '#991b1b';
+    ctx.strokeStyle = '#92400e';
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -381,7 +381,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
               style={{
                 fontFamily: "'Noto Sans KR', sans-serif",
                 fontWeight: 900,
-                background: 'linear-gradient(135deg, #ef4444, #dc2626, #b91c1c)',
+                background: 'linear-gradient(135deg, #f59e0b, #d97706, #b45309)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent'
               }}>
@@ -399,8 +399,8 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
                     <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.3" />
                   </filter>
                 </defs>
-                <polygon points="18,44 2,0 34,0" fill="#dc2626" stroke="#991b1b" strokeWidth="1.5" filter="url(#pointer-shadow)" />
-                <polygon points="18,36 8,6 28,6" fill="#ef4444" />
+                <polygon points="18,44 2,0 34,0" fill="#d97706" stroke="#92400e" strokeWidth="1.5" filter="url(#pointer-shadow)" />
+                <polygon points="18,36 8,6 28,6" fill="#f59e0b" />
               </svg>
             </div>
 
@@ -422,7 +422,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
           )}
 
           {isSpinning && (
-            <p className="text-red-500 font-bold text-sm sm:text-lg animate-pulse">
+            <p className="text-amber-500 font-bold text-sm sm:text-lg animate-pulse">
               {winners.length + 1} / {winnerCount}번째 추첨 중...
             </p>
           )}
@@ -430,7 +430,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
           <button onClick={startSpin} disabled={isSpinning || items.length < 1}
             className="w-full max-w-[280px] sm:max-w-[340px] py-3 sm:py-5 text-white rounded-xl shadow-lg transition-all font-black text-base sm:text-2xl tracking-widest disabled:opacity-30 active:scale-95 flex items-center justify-center uppercase"
             style={{
-              background: isSpinning ? '#dc2626' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+              background: isSpinning ? '#d97706' : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
               boxShadow: '0 4px 20px rgba(220,38,38,0.35)'
             }}>
             {isSpinning ? <RefreshCw className="w-5 h-5 sm:w-7 sm:h-7 animate-spin" /> : <><Sparkles className="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3" /> START</>}
@@ -443,7 +443,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
             <div className="space-y-1.5 sm:space-y-2.5">
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-500"><Type className="w-4 h-4 sm:w-5 sm:h-5" /><span className="text-[15px] sm:text-[18px] font-medium tracking-tight">주제</span></div>
               <input type="text" value={subject} onChange={e => setSubject(e.target.value)} disabled={isSpinning}
-                className="w-full px-3 sm:px-5 py-2.5 sm:py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-[15px] sm:text-[18px] font-bold shadow-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-400 outline-none transition-all placeholder:text-slate-300 disabled:opacity-50" />
+                className="w-full px-3 sm:px-5 py-2.5 sm:py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-[15px] sm:text-[18px] font-bold shadow-sm focus:ring-2 focus:ring-amber-500/10 focus:border-amber-400 outline-none transition-all placeholder:text-slate-300 disabled:opacity-50" />
             </div>
             <div className="space-y-1.5 sm:space-y-2.5">
               <div className="flex items-center space-x-2 sm:space-x-3 text-slate-500"><Users className="w-4 h-4 sm:w-5 sm:h-5" /><span className="text-[15px] sm:text-[18px] font-medium tracking-tight">당첨 인원</span></div>
@@ -463,7 +463,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
                 <input type="text" value={newItemText} onChange={e => setNewItemText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAddItem()} disabled={isSpinning}
                   placeholder="항목명" className="flex-1 min-w-0 px-3 sm:px-5 py-2.5 sm:py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-[15px] sm:text-[18px] font-bold shadow-sm outline-none placeholder:text-slate-300 disabled:opacity-50" />
                 <button onClick={handleAddItem} disabled={isSpinning}
-                  className="px-3 sm:px-6 bg-red-600 text-white rounded-xl font-black text-[14px] sm:text-[16px] hover:bg-red-700 transition-all flex items-center justify-center shadow-md active:scale-95 group disabled:opacity-50 shrink-0 whitespace-nowrap">
+                  className="px-3 sm:px-6 bg-amber-600 text-white rounded-xl font-black text-[14px] sm:text-[16px] hover:bg-amber-700 transition-all flex items-center justify-center shadow-md active:scale-95 group disabled:opacity-50 shrink-0 whitespace-nowrap">
                   <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 group-hover:rotate-90 transition-transform" /> 추가
                 </button>
               </div>
@@ -472,12 +472,12 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
 
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <button onClick={downloadRouletteTemplate} disabled={isSpinning}
-              className="flex items-center justify-center py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-xl hover:bg-red-50 transition-all text-[14px] sm:text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
-              <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-red-500" /> 양식 받기
+              className="flex items-center justify-center py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-xl hover:bg-amber-50 transition-all text-[14px] sm:text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
+              <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-amber-500" /> 양식 받기
             </button>
             <button onClick={() => fileInputRef.current?.click()} disabled={isSpinning}
-              className="flex items-center justify-center py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-xl hover:bg-red-50 transition-all text-[14px] sm:text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
-              <FileUp className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-red-500" /> 파일 업로드
+              className="flex items-center justify-center py-2.5 sm:py-3.5 bg-white border border-slate-200 rounded-xl hover:bg-amber-50 transition-all text-[14px] sm:text-[16px] font-bold text-slate-600 shadow-sm disabled:opacity-50">
+              <FileUp className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 text-amber-500" /> 파일 업로드
             </button>
             <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".xlsx,.xls" />
           </div>
@@ -547,7 +547,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
               </div>
             </div>
             <button onClick={() => setWinners([])}
-              className="relative z-10 px-14 sm:px-32 py-3 sm:py-6 bg-red-600 text-white rounded-xl font-black text-lg sm:text-3xl hover:bg-red-700 transition-all active:scale-95 shadow-xl">확인</button>
+              className="relative z-10 px-14 sm:px-32 py-3 sm:py-6 bg-amber-600 text-white rounded-xl font-black text-lg sm:text-3xl hover:bg-amber-700 transition-all active:scale-95 shadow-xl">확인</button>
           </div>
         )}
       </div>
