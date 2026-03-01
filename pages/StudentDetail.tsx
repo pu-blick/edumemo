@@ -207,8 +207,8 @@ const StudentDetail: React.FC = () => {
             ) : (
               <>
                 <div className="relative group">
-                  <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">{student?.student_number}</p>
-                  <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">{student?.name} 학생</h1>
+                  <p className="text-[17px] text-slate-400 font-bold tracking-widest uppercase">{student?.student_number}</p>
+                  <h1 className="text-[27px] font-black text-slate-800 tracking-tight">{student?.name} 학생</h1>
                   <button onClick={() => setIsEditingInfo(true)} className="absolute -left-8 top-1/2 -translate-y-1/2 p-2 text-slate-300 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-all"><Edit2 size={16} /></button>
                 </div>
                 <div className="w-14 h-14 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 border-2 border-white shadow-sm"><UserIcon size={24} /></div>
