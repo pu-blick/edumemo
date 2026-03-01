@@ -293,7 +293,7 @@ const StudentDetail: React.FC = () => {
       {/* AI 초안 생성 패널 */}
       <div className="lg:col-span-4">
         <div className="glass rounded-custom p-6 sm:p-8 sticky top-20 lg:top-24 border border-white shadow-xl bg-white/40">
-          <h2 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-2"><Zap className="text-indigo-600 fill-indigo-600" size={20} /> AI 초안 생성</h2>
+          <h2 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-2"><Zap className="text-indigo-600 fill-indigo-600" size={20} /> 생활기록부 초안 작성</h2>
 
           {/* BYOK API 키 설정 */}
           <div className="mb-6 p-4 rounded-xl bg-slate-50 border border-slate-100">
@@ -323,7 +323,7 @@ const StudentDetail: React.FC = () => {
           </div>
 
           <div className="mb-8">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1">희망 분량</label>
+            <label className="block text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-3 text-center">희망 분량</label>
             <div className="grid grid-cols-3 gap-2 mb-3">
               {[300, 500, 800].map(l => (
                 <button key={l} onClick={() => setCharLimit(l)} className={`py-2.5 rounded-xl text-[12px] font-bold border transition-all ${charLimit === l ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-white text-slate-400 border-slate-100'}`}>{l}자</button>

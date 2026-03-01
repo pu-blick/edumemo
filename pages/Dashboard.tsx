@@ -201,8 +201,7 @@ const Dashboard: React.FC = () => {
               <h2 className="text-[1.35rem] font-black text-slate-800 mb-1 tracking-tight flex-grow group-hover:text-indigo-600 transition-colors">{classroom.name}</h2>
             )}
 
-            <div className="flex justify-between items-center mt-3 pt-2.5 border-t border-slate-50">
-              <span className="text-[10px] text-slate-400 font-medium tracking-wider uppercase">기록 보호 중</span>
+            <div className="flex justify-end items-center mt-3 pt-2.5 border-t border-slate-50">
               <Link to={`/classroom/${classroom.id}`} className="flex items-center gap-1 text-indigo-600 font-bold hover:underline text-[11px]">
                 Enter <ChevronRight size={14} />
               </Link>
