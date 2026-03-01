@@ -292,7 +292,7 @@ const StudentDetail: React.FC = () => {
 
       {/* AI 초안 생성 패널 */}
       <div className="lg:col-span-4">
-        <div className="glass rounded-custom p-6 sm:p-8 sticky top-24 border border-white shadow-xl bg-white/40">
+        <div className="glass rounded-custom p-6 sm:p-8 sticky top-20 lg:top-24 border border-white shadow-xl bg-white/40">
           <h2 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-2"><Zap className="text-indigo-600 fill-indigo-600" size={20} /> AI 초안 생성</h2>
 
           {/* BYOK API 키 설정 */}

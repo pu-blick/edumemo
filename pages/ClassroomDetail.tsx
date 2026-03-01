@@ -180,7 +180,7 @@ const ClassroomDetail: React.FC = () => {
         <Link to="/" className="inline-flex items-center gap-1.5 text-indigo-600 font-bold hover:bg-indigo-50 px-2 py-1 rounded-lg transition-all mb-4 text-[13px]"><ArrowLeft size={16} /> 돌아가기</Link>
 
         <div className="flex flex-col gap-5">
-          <h1 className="text-4xl font-black text-slate-800 tracking-tight leading-tight">{classroom?.name || '학급 정보 로딩 중...'}</h1>
+          <h1 className="text-2xl sm:text-4xl font-black text-slate-800 tracking-tight leading-tight">{classroom?.name || '학급 정보 로딩 중...'}</h1>
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-white px-4 h-12 rounded-xl border border-slate-100 shadow-sm">
@@ -194,29 +194,29 @@ const ClassroomDetail: React.FC = () => {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-2">
-              <button onClick={() => downloadTemplate('students')} className="flex items-center justify-center w-12 h-12 bg-white rounded-xl border border-slate-100 shadow-sm text-slate-300 hover:text-indigo-600 transition-all" title="명단 양식 다운로드">
-                <Download size={20} />
+              <button onClick={() => downloadTemplate('students')} className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl border border-slate-100 shadow-sm text-slate-300 hover:text-indigo-600 transition-all shrink-0" title="명단 양식 다운로드">
+                <Download size={18} />
               </button>
-              <label className="flex items-center gap-2 px-5 h-12 bg-white text-[#10B981] border border-slate-100 rounded-xl font-bold text-[14px] shadow-sm cursor-pointer hover:bg-emerald-50 transition-colors">
-                <UserPlus size={18} className="shrink-0" /> 명단 업로드
+              <label className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 h-10 sm:h-12 bg-white text-[#10B981] border border-slate-100 rounded-xl font-bold text-[12px] sm:text-[14px] shadow-sm cursor-pointer hover:bg-emerald-50 transition-colors">
+                <UserPlus size={16} className="shrink-0" /> 명단 업로드
                 <input type="file" className="hidden" accept=".xlsx, .xls" onChange={handleStudentListUpload} />
               </label>
             </div>
 
             <div className="flex items-center gap-2">
-              <button onClick={() => downloadTemplate('observations')} className="flex items-center justify-center w-12 h-12 bg-white rounded-xl border border-slate-100 shadow-sm text-slate-300 hover:text-indigo-600 transition-all" title="기록 양식 다운로드">
-                <Download size={20} />
+              <button onClick={() => downloadTemplate('observations')} className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl border border-slate-100 shadow-sm text-slate-300 hover:text-indigo-600 transition-all shrink-0" title="기록 양식 다운로드">
+                <Download size={18} />
               </button>
-              <label className="flex items-center gap-2 px-5 h-12 bg-white text-[#4F46E5] border border-slate-100 rounded-xl font-bold text-[14px] shadow-sm cursor-pointer hover:bg-indigo-50 transition-colors">
-                <ClipboardList size={18} className="shrink-0" /> 기록 업로드
+              <label className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 h-10 sm:h-12 bg-white text-[#4F46E5] border border-slate-100 rounded-xl font-bold text-[12px] sm:text-[14px] shadow-sm cursor-pointer hover:bg-indigo-50 transition-colors">
+                <ClipboardList size={16} className="shrink-0" /> 기록 업로드
                 <input type="file" className="hidden" accept=".xlsx, .xls" onChange={handleObservationUpload} />
               </label>
             </div>
 
-            <button onClick={() => setIsAdding(true)} className="flex items-center gap-2 px-5 h-12 bg-[#1E293B] text-white rounded-xl font-bold text-[14px] hover:bg-black transition-all shadow-md">
-              <FileUp size={18} /> 직접 추가
+            <button onClick={() => setIsAdding(true)} className="col-span-2 sm:col-span-1 flex items-center justify-center gap-2 px-5 h-10 sm:h-12 bg-[#1E293B] text-white rounded-xl font-bold text-[12px] sm:text-[14px] hover:bg-black transition-all shadow-md">
+              <FileUp size={16} /> 직접 추가
             </button>
           </div>
         </div>
@@ -274,7 +274,7 @@ const ClassroomDetail: React.FC = () => {
                 <span className="text-[15px] font-black text-slate-800 tracking-tight truncate leading-none">{student.name}</span>
               </div>
               {obsCounts[student.id] > 0 && (
-                <div className="bg-[#EF4444] text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-sm shrink-0">
+                <div className="bg-[#EF4444] text-white text-[10px] font-black w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-sm shrink-0">
                   {obsCounts[student.id]}
                 </div>
               )}

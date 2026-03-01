@@ -136,7 +136,7 @@ const BatchGenerator: React.FC = () => {
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <Link to={selectedClassroom ? `/classroom/${selectedClassroom}` : '/'} className="inline-flex items-center gap-1.5 text-indigo-600 font-bold hover:bg-indigo-50 px-3 py-1 rounded-lg transition-all mb-4 text-[13px]"><ArrowLeft size={16} /> 돌아가기</Link>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">생기부 일괄 작성</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">생기부 일괄 작성</h1>
           <p className="text-slate-400 font-medium text-[13px] mt-1">선택된 학생들의 생활기록부 초안을 AI로 일괄 생성합니다.</p>
         </div>
       </div>
@@ -234,7 +234,7 @@ const BatchGenerator: React.FC = () => {
       </div>
 
       {/* 설정 및 실행 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div className="glass rounded-2xl p-6 border border-white shadow-md">
           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">희망 분량</label>
           <div className="grid grid-cols-3 gap-2 mb-3">
