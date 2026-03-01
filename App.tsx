@@ -241,7 +241,7 @@ const AppContent: React.FC = () => {
 
         <footer className="py-8 border-t border-slate-100 bg-white">
           <div className="container mx-auto px-4 flex flex-col gap-4">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
 
               {/* PC: 파이프 구분 2줄 */}
               <div className="hidden md:block text-xs text-slate-400 leading-relaxed space-y-0.5 shrink-0">
