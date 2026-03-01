@@ -189,7 +189,7 @@ const PricingPage: React.FC = () => {
       {/* 현재 플랜 상태 */}
       <div className="mb-8 p-5 glass rounded-2xl border border-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">현재 플랜</p>
+          <p className="text-[11px] text-slate-400 mb-1">현재 플랜</p>
           <div className="flex items-center gap-2">
             <span className="text-xl font-black text-slate-800 capitalize">
               {(subscription?.plan as string) === 'pro' ? 'T-buff Basic'
