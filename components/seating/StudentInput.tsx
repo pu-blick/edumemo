@@ -57,7 +57,7 @@ const StudentInput: React.FC<StudentInputProps> = ({ students, setStudents }) =>
 
   return (
     <div className="flex flex-col h-full">
-      <div className="grid grid-cols-1 gap-2.5 sm:gap-3 mb-4 sm:mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-1 gap-2.5 sm:gap-3 mb-4 sm:mb-6">
         <button
           onClick={downloadTemplate}
           className="flex items-center justify-center px-4 py-2.5 sm:py-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-[13px] sm:text-[15px] font-black text-slate-500 uppercase active:scale-95 shadow-sm"

@@ -302,7 +302,7 @@ const SeatingPage: React.FC = () => {
 
               <div className="space-y-2">
                 <label className="block text-[10px] sm:text-[12px] font-black text-slate-300 uppercase tracking-widest">View Option</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
+                <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
                   <button
                     onClick={() => setIsTeacherView(!isTeacherView)}
                     className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 bg-white border border-slate-200 rounded-lg sm:rounded-xl text-[12px] sm:text-[14px] font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm group"
