@@ -51,7 +51,7 @@ const SeatingGrid: React.FC<SeatingGridProps> = ({ config, seatingPlan, onSeatCl
                     ? 'opacity-30 bg-slate-100 border-dashed border-slate-300 pointer-events-auto'
                     : 'opacity-0 pointer-events-none'
                   : ''}
-                aspect-[4/3] sm:aspect-video min-h-[50px]
+                aspect-[4/3] min-h-[50px]
               `}
             >
               {!isExcluded && (
@@ -65,17 +65,17 @@ const SeatingGrid: React.FC<SeatingGridProps> = ({ config, seatingPlan, onSeatCl
               ) : seat.isRevealed ? (
                 <div className="capture-seat-content flex flex-col items-center justify-center w-full h-full p-1 sm:p-4 text-center space-y-0 sm:space-y-0.5 overflow-hidden">
                   {studentId && (
-                    <span className="capture-text-id font-medium text-black text-[10px] sm:text-xl lg:text-2xl leading-tight">
+                    <span className="capture-text-id font-medium text-black text-[10px] sm:text-sm lg:text-base leading-tight">
                       {studentId}
                     </span>
                   )}
-                  <span className="capture-text-name font-black text-slate-900 text-[11px] sm:text-xl lg:text-3xl leading-tight truncate w-full px-1">
+                  <span className="capture-text-name font-black text-slate-900 text-[11px] sm:text-base lg:text-lg leading-tight truncate w-full px-1">
                     {studentName}
                   </span>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center opacity-40">
-                  <span className="text-[11px] sm:text-xl font-black text-slate-400">{actualIndex + 1}</span>
+                  <span className="text-[11px] sm:text-sm font-black text-slate-400">{actualIndex + 1}</span>
                   {seat.student && <MousePointer2 className="w-3 h-3 sm:w-5 sm:h-5 mt-1 sm:mt-2 text-slate-300 animate-bounce" />}
                 </div>
               )}

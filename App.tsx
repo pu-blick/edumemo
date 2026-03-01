@@ -121,7 +121,7 @@ const Navbar: React.FC<{ isOnline: boolean }> = ({ isOnline }) => {
               <LayoutDashboard size={16} /> Dashboard
             </Link>
 
-            <Link to="/seating" className="hidden md:flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors bg-indigo-50 px-2.5 py-1 rounded-lg">
+            <Link to="/seating" className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors bg-indigo-50 px-2.5 py-1 rounded-lg">
               <Grid3X3 size={15} /> 자리배치
             </Link>
 
