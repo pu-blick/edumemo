@@ -112,7 +112,7 @@ const Navbar: React.FC<{ isOnline: boolean }> = ({ isOnline }) => {
       <nav className="bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-2 flex items-center justify-between sticky top-0 z-50 shadow-sm min-h-[48px]">
         <Link to="/" className="flex items-center gap-1.5 md:gap-2 group shrink-0">
           <Logo size={28} className="group-hover:scale-110 md:!w-9 md:!h-9" />
-          <span className="text-xl font-black tracking-tighter text-slate-800">Edumemo</span>
+          <span className="text-xl font-black tracking-tighter text-slate-800" style={{ fontFamily: "'Noto Sans KR', sans-serif", fontWeight: 900 }}>Edumemo</span>
         </Link>
 
         {user && (
