@@ -80,9 +80,10 @@ const ProRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
         <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 sm:p-12 max-w-md text-center">
           <Grid3X3 className="w-16 h-16 text-indigo-400 mx-auto mb-6" />
-          <h2 className="text-2xl font-black text-slate-800 mb-3">Pro 플랜 전용 기능</h2>
+          <h2 className="text-2xl font-black text-slate-800 mb-3">유료 플랜 전용 기능</h2>
           <p className="text-sm text-slate-500 mb-6 leading-relaxed">
-            자리배치 도우미는 Pro, Plus, School 플랜 구독 시 이용할 수 있습니다.
+            자리배치 도우미는 유료 플랜 전용 기능입니다.<br />
+            Basic, Pro, School 구독 시 이용할 수 있습니다.
           </p>
           <Link to="/pricing" className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-md">
             <CreditCard size={16} /> 구독 플랜 보기

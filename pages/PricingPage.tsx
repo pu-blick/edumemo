@@ -238,7 +238,7 @@ const PricingPage: React.FC = () => {
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="text-[22px] font-black text-slate-800 leading-tight">{plan.name}</h3>
                       {'recommended' in plan && plan.recommended && (
-                        <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/70 ${c.check}`}>추천</span>
+                        <span className={`text-[12px] font-black tracking-wider px-2.5 py-0.5 rounded-full bg-white/70 ${c.check} animate-pulse`}>담임추천</span>
                       )}
                     </div>
                     <p className={`text-[17px] font-black ${c.price}`}>{plan.priceDisplay}</p>
@@ -302,10 +302,15 @@ const PricingPage: React.FC = () => {
           <div>
             <span className="font-black text-slate-600 text-sm block sm:inline">Free 플랜</span>
             <span className="text-[12px] text-slate-400 block sm:inline sm:ml-2 mt-0.5 sm:mt-0">가입 시 크레딧 10개 지급 · 클래스 1개, 클래스당 최대 3명</span>
+            {(subscription?.plan === 'free' || !subscription?.plan) && (
+              <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1 mt-1 sm:hidden">
+                <CheckCircle size={13} /> 현재 플랜
+              </span>
+            )}
           </div>
         </div>
         {(subscription?.plan === 'free' || !subscription?.plan) && (
-          <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+          <span className="text-[11px] font-bold text-emerald-600 hidden sm:flex items-center gap-1">
             <CheckCircle size={13} /> 현재 플랜
           </span>
         )}

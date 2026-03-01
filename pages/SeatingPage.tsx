@@ -266,7 +266,7 @@ const SeatingPage: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
-          <button onClick={() => setShowRoulette(true)} className="flex-1 sm:flex-none flex items-center justify-center px-3 sm:px-6 py-2 sm:py-3 bg-white text-amber-600 rounded-lg sm:rounded-xl hover:bg-amber-50 transition-all text-xs sm:text-sm font-medium sm:font-bold border border-slate-100 shadow-sm active:scale-95">
+          <button onClick={() => setShowRoulette(true)} className="flex-1 sm:flex-none flex items-center justify-center px-3 sm:px-6 py-2 sm:py-3 bg-white text-amber-500 rounded-lg sm:rounded-xl hover:bg-amber-50 transition-all text-xs sm:text-sm font-medium sm:font-bold border border-slate-100 shadow-sm active:scale-95">
             <Disc className="w-4 h-4 sm:w-6 sm:h-6 mr-1.5 sm:mr-2" /> <span className="whitespace-nowrap">룰렛 추첨</span>
           </button>
           <button onClick={handleExportImage} className="flex-1 sm:flex-none flex items-center justify-center px-3 sm:px-6 py-2 sm:py-3 bg-white border border-slate-200 rounded-lg sm:rounded-xl hover:bg-slate-50 hover:text-indigo-600 transition-all text-xs sm:text-sm font-medium sm:font-bold shadow-sm active:scale-95">

@@ -146,13 +146,20 @@ const StudentDetail: React.FC = () => {
     recognition.interimResults = true;
     liveTranscriptionRef.current = '';
     isRecordingRef.current = true;
+    let confirmedText = '';
     recognition.onresult = (event: any) => {
-      let transcript = '';
+      let sessionFinal = '';
+      let sessionInterim = '';
       for (let i = 0; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          sessionFinal += event.results[i][0].transcript;
+        } else {
+          sessionInterim += event.results[i][0].transcript;
+        }
       }
-      liveTranscriptionRef.current = transcript;
-      setLiveTranscription(transcript);
+      const full = confirmedText + sessionFinal + sessionInterim;
+      liveTranscriptionRef.current = full;
+      setLiveTranscription(full);
     };
     recognition.onerror = (e: any) => {
       if (e.error !== 'no-speech') {
@@ -162,6 +169,7 @@ const StudentDetail: React.FC = () => {
     };
     recognition.onend = () => {
       if (isRecordingRef.current) {
+        confirmedText = liveTranscriptionRef.current;
         try { recognition.start(); } catch {}
       } else {
         setIsRecording(false);
