@@ -229,13 +229,13 @@ const SeatingPage: React.FC = () => {
     <div className="flex flex-col overflow-x-hidden text-slate-800 font-sans animate-fade-in" style={{ minHeight: 'calc(100vh - 200px)' }}>
       {/* ── 헤더: 학급 선택 + 액션 버튼 ──────────── */}
       <header className="no-print shrink-0 px-4 sm:px-8 py-3 sm:py-5 flex flex-col sm:flex-row items-center justify-between border-b bg-white rounded-t-2xl shadow-sm z-10 gap-3 sm:gap-0">
-        <div className="flex items-center space-x-3 sm:space-x-5 self-start sm:self-center">
-          <div onClick={handleLogoClick} className="p-1.5 sm:p-2.5 bg-indigo-600 rounded-lg sm:rounded-xl shadow-lg shadow-slate-200 cursor-pointer select-none">
+        <div className="flex items-center gap-3 sm:gap-5 self-start sm:self-center">
+          <div onClick={handleLogoClick} className="p-1.5 sm:p-2.5 bg-indigo-600 rounded-lg sm:rounded-xl shadow-lg shadow-slate-200 cursor-pointer select-none shrink-0">
             <LayoutGrid className="text-white w-5 h-5 sm:w-7 sm:h-7" />
           </div>
-          <div>
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-2xl font-extrabold sm:font-black tracking-tight text-slate-900 leading-none mb-0.5 sm:mb-1" style={{ WebkitTextStroke: '0.5px' }}>자리배치 도우미</h1>
+              <h1 className="text-lg sm:text-2xl font-extrabold sm:font-black tracking-tight text-slate-900 leading-none" style={{ WebkitTextStroke: '0.5px' }}>자리배치 도우미</h1>
               {isSecretMode && (
                 <span className="flex items-center gap-1 text-[10px] sm:text-xs font-bold text-amber-600 bg-amber-50 border border-amber-300 px-1.5 py-0.5 rounded-full">
                   <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> 시크릿
