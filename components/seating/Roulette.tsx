@@ -369,7 +369,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-6 font-sans overflow-hidden">
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative w-full max-w-6xl bg-white rounded-2xl p-4 sm:p-10 shadow-2xl flex flex-col lg:flex-row gap-4 sm:gap-8 lg:gap-12 animate-in fade-in zoom-in duration-300 max-h-[95vh] overflow-y-auto lg:overflow-hidden border border-slate-200">
+      <div className="relative w-full max-w-6xl bg-white rounded-2xl p-4 sm:p-10 shadow-2xl flex flex-col lg:flex-row gap-4 sm:gap-8 lg:gap-12 animate-in fade-in zoom-in duration-300 max-h-[95vh] overflow-y-auto border border-slate-200">
         <button onClick={onClose} className="absolute top-3 right-3 sm:top-4 sm:right-6 p-1.5 sm:p-2 hover:bg-slate-100 rounded-full transition-all z-50">
           <X className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
         </button>
@@ -485,7 +485,7 @@ const Roulette: React.FC<RouletteProps> = ({ onClose, students }) => {
           <div className="flex-1 overflow-hidden flex flex-col bg-slate-50 border border-slate-200 rounded-xl min-h-[160px] sm:min-h-[200px]">
             <div className="px-3 sm:px-5 py-2 sm:py-3 bg-white border-b border-slate-200 flex justify-between items-center shrink-0">
               <h4 className="text-[15px] sm:text-[18px] font-medium text-slate-500">참여 항목 ({items.length})</h4>
-              <button onClick={() => setItems([])} disabled={isSpinning} className="text-[12px] sm:text-[13px] font-bold text-rose-500 hover:text-rose-700 transition-colors disabled:opacity-50">전체 삭제</button>
+              <button onClick={() => setItems([])} disabled={isSpinning} className="text-[12px] sm:text-[13px] font-bold text-amber-500 hover:text-amber-700 transition-colors disabled:opacity-50">전체 삭제</button>
             </div>
             <div className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-1.5 sm:space-y-2">
               {items.map((item, idx) => (
