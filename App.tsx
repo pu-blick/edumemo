@@ -250,8 +250,8 @@ const AppContent: React.FC = () => {
                 <p>주소: 세종특별자치시 도움3로 105-5 806호 | 이메일: publicsky7@gmail.com | 운영시간: 10:00 ~ 17:00</p>
               </div>
 
-              {/* 모바일: 항목별 줄바꿈 */}
-              <div className="block md:hidden text-[11px] text-slate-400 leading-relaxed space-y-0.5">
+              {/* 모바일: 항목별 줄바꿈, 중앙정렬 */}
+              <div className="block md:hidden text-[11px] text-slate-400 leading-relaxed space-y-0.5 text-center">
                 <p className="font-bold text-slate-500">주식회사 퍼블릭스카이</p>
                 <p>대표자: 하상욱</p>
                 <p>사업자등록번호: 618-81-37189</p>
@@ -261,13 +261,13 @@ const AppContent: React.FC = () => {
                 <p>운영시간: 10:00 ~ 17:00</p>
               </div>
 
-              {user && (
-                <p className="hidden md:block text-[9px] text-slate-400 font-medium bg-slate-50 px-3 py-1 rounded-lg border border-slate-100 uppercase shrink-0">
-                  SESSION: {user.id.substring(0, 8)}
-                </p>
-              )}
+              <div className="hidden md:flex items-center gap-4 shrink-0">
+                <Link to="/privacy" className="text-xs text-slate-400 hover:text-indigo-600 transition-colors font-medium">개인정보 처리방침</Link>
+                <span className="text-slate-200 text-xs">|</span>
+                <Link to="/terms" className="text-xs text-slate-400 hover:text-indigo-600 transition-colors font-medium">이용약관</Link>
+              </div>
             </div>
-            <div className="flex items-center gap-4 pt-2 border-t border-slate-50">
+            <div className="flex md:hidden items-center justify-center gap-4 pt-2 border-t border-slate-50">
               <Link to="/privacy" className="text-xs text-slate-400 hover:text-indigo-600 transition-colors font-medium">개인정보 처리방침</Link>
               <span className="text-slate-200 text-xs">|</span>
               <Link to="/terms" className="text-xs text-slate-400 hover:text-indigo-600 transition-colors font-medium">이용약관</Link>
