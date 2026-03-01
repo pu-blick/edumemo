@@ -213,7 +213,7 @@ const PricingPage: React.FC = () => {
       </div>
 
       {/* 플랜 카드 3개 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {PLANS.map(plan => {
           const c = COLOR[plan.color];
           const isCurrent = isCurrentPlan(plan.id);
@@ -224,7 +224,7 @@ const PricingPage: React.FC = () => {
               key={plan.id}
               className={`relative flex flex-col bg-white rounded-2xl border-2 shadow-sm overflow-hidden transition-all
                 ${isCurrent ? c.border : 'border-slate-100'}
-                ${'recommended' in plan && plan.recommended ? 'lg:-mt-3 lg:shadow-xl' : ''}
+                ${'recommended' in plan && plan.recommended ? 'md:-mt-3 md:shadow-xl' : ''}
               `}
             >
               {'recommended' in plan && plan.recommended && (
